@@ -1,6 +1,6 @@
 const express = require("express");
-const app = express();
 const mongoose = require("mongoose");
+const app = express();
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
@@ -49,6 +49,6 @@ app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 
-app.listen(8800, () => {
+app.listen(3000, () => {
   console.log("Backend server is running!");
 });
