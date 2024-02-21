@@ -20,23 +20,38 @@ router.post("/register", async (req, res) => {
     const user = await newUser.save();
     res.status(200).json(user);
   } catch (err) {
-    res.status(500).json(err)
+    console.error(err);  // Imprime el error en la consola del servidor
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
 //LOGIN
+//LOGIN
 router.post("/login", async (req, res) => {
+  console.log("email: ", req.body.email)
   try {
     const user = await User.findOne({ email: req.body.email });
-    !user && res.status(404).json("user not found");
+    console.log("user: ", user);
+    
 
-    const validPassword = await bcrypt.compare(req.body.password, user.password)
-    !validPassword && res.status(400).json("wrong password")
+    if (!user) {
+      console.log("Entra?")
+      return res.status(404).json("User not found"); // Cambiado a un return aquí
+    }
 
-    res.status(200).json(user)
+    console.log("Ya no sigue")
+
+    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    if (!validPassword) {
+      return res.status(400).json("Wrong password"); // Cambiado a un return aquí
+    }
+
+    res.status(200).json(user);
   } catch (err) {
-    res.status(500).json(err)
+    console.error(err);  // Imprime el error en la consola del servidor
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 
 module.exports = router;
