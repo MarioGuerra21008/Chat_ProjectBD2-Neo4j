@@ -57,6 +57,7 @@ router.get("/", async (req, res) => {
 
 //get friends
 router.get("/friends/:userId", async (req, res) => {
+  console.log("Id del usuario", req.params.userId)
   try {
     const user = await User.findById(req.params.userId);
     const friends = await Promise.all(

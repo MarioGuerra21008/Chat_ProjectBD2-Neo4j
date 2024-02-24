@@ -14,7 +14,8 @@ router.post("/register", async (req, res) => {
     const newUser = new User({
       username: req.body.username,
       email: req.body.email,
-      password: hashedPassword,
+      passwordHash: hashedPassword,
+      password: req.body.password
     });
 
     //save user and respond
@@ -42,7 +43,7 @@ router.post("/login", async (req, res) => {
 
     console.log("Ya no sigue")
 
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    const validPassword = await bcrypt.compare(req.body.password, user.passwordHash);
     if (!validPassword) {
       return res.status(400).json("Wrong password"); // Cambiado a un return aquí
     }
