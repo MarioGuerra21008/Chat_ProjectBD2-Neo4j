@@ -117,11 +117,7 @@ export default function Messenger(){
         </div>
         <div className="chatOnline">
           <div className="chatOnlineWrapper">
-            <ChatOnline
-                onlineUsers={onlineUsers}
-                currentId={user._id}
-                setCurrentChat={setCurrentChat}
-              />
+            hola
           </div>
         </div>
       </div></>
