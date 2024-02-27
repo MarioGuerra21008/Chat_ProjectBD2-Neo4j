@@ -30,6 +30,11 @@ export default function Register() {
     }
   };
 
+  const handleLoginClick = () => {
+    // Navegar hacia la ruta /login al hacer clic en el botón "Log into Account"
+    history.push("/login");
+  };
+
   return (
     <div className="login">
       <div className="loginWrapper">
@@ -72,7 +77,7 @@ export default function Register() {
             <button className="loginButton" type="submit">
               Sign Up
             </button>
-            <button className="loginRegisterButton">Log into Account</button>
+            <button className="loginRegisterButton" onClick={handleLoginClick}>Log into Account</button>
           </form>
         </div>
       </div>
