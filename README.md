@@ -39,3 +39,32 @@ Las colecciones utilizadas para el proyecto fueron las siguientes:
   ![Descripción de la imagen](messages_collection.png)
 - conversations:
   ![Descripción de la imagen](conversations_collection.png)
+
+### Generación de Datos usando JavaScript
+
+Se utiliza un script para la generación de datos para las bases en MongoDB, para esto se requiere hacer una conexión a la URI de la base de datos.
+
+```bash
+MONGO_URL = mongodb://localhost:27017/<nombre_de_la_base_de_datos>
+```
+
+Para correr el script, se requiere de las siguientes dependencias:
+
+```bash
+yarn add mongoose
+yarn add @faker-js/faker
+yarn add bcrypt
+```
+
+O con NPM:
+
+```bash
+npm install mongoose
+npm install @faker-js/faker
+npm install bcrypt
+```
+Finalmente, para ejecutar el script "scripProyectoBDD.js" se utiliza el siguiente comando:
+
+```bash
+node scriptProyectoBDD.js
+```
