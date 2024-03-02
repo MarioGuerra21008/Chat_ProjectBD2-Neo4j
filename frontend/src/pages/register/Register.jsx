@@ -39,9 +39,9 @@ export default function Register() {
     <div className="login">
       <div className="loginWrapper">
         <div className="loginLeft">
-          <h3 className="loginLogo">Reddit Social</h3>
+          <h3 className="loginLogo">tilinesbook</h3>
           <span className="loginDesc">
-            Connect with friends and the world around you on Reddit Social.
+            Conecta con tus amigos alrededor del mundo
           </span>
         </div>
         <div className="loginRight">
