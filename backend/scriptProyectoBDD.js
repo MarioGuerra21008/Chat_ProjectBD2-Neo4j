@@ -58,10 +58,11 @@ async function hashPassword(password) {
 async function generateUsers(numUsers) {
     const users = [];
     const allUsers = await User.find(); // Obtener todos los usuarios existentes
+    const usersData = []; // Array para almacenar los datos de usuarios a insertar
     for (let i = 0; i < numUsers; i++) {
         const password = faker.internet.password();
         const passwordHash = await hashPassword(password); // Generar hash de la contraseña
-        const user = new User({
+        const user = {
             profilePicture: faker.image.avatar(),
             coverPicture: faker.image.url(),
             followers: [],
@@ -73,14 +74,17 @@ async function generateUsers(numUsers) {
             password: password, // Mantener la contraseña original
             createdAt: faker.date.past(),
             updatedAt: faker.date.recent()
-        });
+        };
         // Agregar ObjectID de usuarios aleatorios a followers y following
         const randomUserIds = getRandomUserIds(allUsers, 100); // Obtener hasta 100 ObjectID de usuarios aleatorios
         user.followers = randomUserIds;
         user.following = randomUserIds;
-        await user.save();
         users.push(user);
+        usersData.push({
+            insertOne: { document: user }
+        });
     }
+    await User.bulkWrite(usersData); // Insertar todos los usuarios de una vez
     return users;
 }
 
@@ -96,6 +100,7 @@ function getRandomUserIds(users, maxCount) {
 
 // Función para generar publicaciones
 async function generatePosts(users) {
+    const postsData = []; // Array para almacenar los datos de publicaciones a insertar
     for (const user of users) {
         const numPosts = Math.floor(Math.random() * 10) + 1; // Ajusta la cantidad según tus necesidades
         for (let i = 0; i < numPosts; i++) {
@@ -106,31 +111,38 @@ async function generatePosts(users) {
                 const randomUser = users[Math.floor(Math.random() * users.length)];
                 likedUsers.push(randomUser._id);
             }
-            const post = new Post({
+            const post = {
                 likes: likedUsers,
                 userId: user._id,
                 desc: faker.lorem.sentence(),
                 img: faker.image.url(),
                 createdAt: faker.date.past(),
                 updatedAt: faker.date.recent()
+            };
+            postsData.push({
+                insertOne: { document: post }
             });
-            await post.save();
         }
     }
+    await Post.bulkWrite(postsData); // Insertar todas las publicaciones de una vez
 }
 
 // Función para generar conversaciones
 async function generateConversations(users) {
     const conversations = [];
+    const conversationsData = []; // Array para almacenar los datos de conversaciones a insertar
     for (let i = 0; i < users.length; i += 2) {
-        const conversation = new Conversation({
+        const conversation = {
             members: [users[i]._id, users[i + 1]._id],
             createdAt: faker.date.past(),
             updatedAt: faker.date.recent()
-        });
-        await conversation.save();
+        };
         conversations.push(conversation);
+        conversationsData.push({
+            insertOne: { document: conversation }
+        });
     }
+    await Conversation.bulkWrite(conversationsData); // Insertar todas las conversaciones de una vez
     return conversations;
 }
 
@@ -141,24 +153,29 @@ function getRandomElement(array) {
 
 // Función para generar mensajes
 async function generateMessages(conversations) {
+    const messagesData = []; // Array para almacenar los datos de mensajes a insertar
     for (const conversation of conversations) {
         const numMessages = Math.floor(Math.random() * 10) + 1;
         for (let i = 0; i < numMessages; i++) {
-            const message = new Message({
+            const message = {
                 conversationId: conversation._id,
                 sender: getRandomElement(conversation.members),
                 text: faker.lorem.sentence(),
                 createdAt: faker.date.past(),
                 updatedAt: faker.date.recent()
+            };
+            messagesData.push({
+                insertOne: { document: message }
             });
-            await message.save();
         }
     }
+    await Message.bulkWrite(messagesData); // Insertar todos los mensajes de una vez
 }
 
 // Generar datos
 async function generateData() {
     const numUsers = 50000;
+    console.log('Empezando generación de datos.');
     const users = await generateUsers(numUsers);
     await generatePosts(users);
     const conversations = await generateConversations(users);
