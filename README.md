@@ -31,10 +31,11 @@ yarn start
 
 Las colecciones utilizadas para el proyecto fueron las siguientes:
 - users:
-  ![Descripción de la imagen](URL_de_la_imagen)
+  ![Descripción de la imagen](users_collection.png)
 - posts:
-  ![Descripción de la imagen](URL_de_la_imagen)
+  ![Descripción de la imagen](posts_collections.png)
 - messages:
-  ![Descripción de la imagen](URL_de_la_imagen)
+  
+  ![Descripción de la imagen](messages_collection.png)
 - conversations:
-  ![Descripción de la imagen](URL_de_la_imagen)
+  ![Descripción de la imagen](conversations_collection.png)
