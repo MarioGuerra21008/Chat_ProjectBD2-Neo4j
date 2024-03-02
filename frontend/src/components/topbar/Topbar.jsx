@@ -12,7 +12,7 @@ export default function Topbar() {
     <div className="topbarContainer">
       <div className="topbarLeft">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">Lamasocial</span>
+          <span className="logo">tilinesbook</span>
         </Link>
       </div>
       <div className="topbarCenter">
@@ -42,9 +42,7 @@ export default function Topbar() {
             <Notifications />
             <span className="topbarIconBadge">1</span>
           </div>
-          <div className="topbarIconItem">
-            <ExitToApp/>
-          </div>
+          
         </div>
         <Link to={`/profile/${user.username}`}>
           <img
