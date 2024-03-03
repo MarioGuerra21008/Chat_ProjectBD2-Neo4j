@@ -11,9 +11,7 @@ export default function Message({ message, own, currentUser}) {
 
   useEffect(() => {
     const fetchUser = async () => {
-      console.log("entra1");
       try {
-        console.log("entra2");
         const res = await axios("/users?userId=" + message.sender);
         console.log("usuario: ", res.data)
         setUser(res.data);

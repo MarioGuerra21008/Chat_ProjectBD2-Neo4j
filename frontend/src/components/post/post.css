@@ -76,3 +76,14 @@
     border-bottom: 1px dashed gray;
     font-size: 15px;
 }
+
+.modalContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalContent {
+  padding: 26px; /* o usa tus preferencias de espaciado */
+  background-color: #fff; /* Cambia el color de fondo según tus preferencias */
+}

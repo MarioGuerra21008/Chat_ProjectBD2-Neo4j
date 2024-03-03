@@ -24,12 +24,31 @@ export default function Feed({ username }) {
     fetchPosts();
   }, [username, user._id]);
 
+  const updatePosts = (postId, operationType, updatedPost = null) => {
+    let updatedPosts;
+  
+    if (operationType === 'delete') {
+      updatedPosts = posts.filter((post) => post._id !== postId);
+    } else if (operationType === 'update' && updatedPost) {
+      updatedPosts = posts.map((post) =>
+        post._id === postId ? updatedPost : post
+      );
+      window.location.reload();
+    } else {
+      console.error('Operación no válida');
+      return;
+    }
+  
+    setPosts(updatedPosts);
+  };
+  
+
   return (
     <div className="feed">
       <div className="feedWrapper">
         {(!username || username === user.username) && <Share />}
         {posts.map((p) => (
-          <Post key={p._id} post={p} />
+          <Post key={p._id} post={p} onUpdate={updatePosts} />
         ))}
       </div>
     </div>
