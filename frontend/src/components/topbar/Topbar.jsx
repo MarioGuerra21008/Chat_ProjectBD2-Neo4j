@@ -1,13 +1,43 @@
 import "./topbar.css";
 import { Search, Person, Chat, Notifications, ExitToApp } from "@material-ui/icons";
+import { IconButton } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import React from "react";
+import React, {useState} from "react";
 
 export default function Topbar() {
   const { user } = useContext(AuthContext);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState(null);
+
+
+  const handleClick = async () => {
+    try {
+      // Realizar la solicitud POST al backend con el término de búsqueda
+      const response = await fetch("/users/search", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ query: searchQuery }),
+      });
+
+      if (response.ok) {
+        // Manejar la respuesta del servidor
+        const searchData = await response.json();
+        console.log(searchData);
+        setSearchResults(searchData);
+        // Aquí puedes hacer algo con los datos de búsqueda, por ejemplo, redirigir a una página de resultados
+      } else {
+        console.error("Error en la solicitud:", response.status);
+      }
+    } catch (error) {
+      console.error("Error al procesar la solicitud:", error);
+    }
+  };
+
   return (
     <div className="topbarContainer">
       <div className="topbarLeft">
@@ -17,10 +47,14 @@ export default function Topbar() {
       </div>
       <div className="topbarCenter">
         <div className="searchbar">
-          <Search className="searchIcon" />
+          <IconButton onClick={handleClick}>
+            <Search className="searchIcon" />
+          </IconButton>
           <input
             placeholder="Search for friend, post or video"
             className="searchInput"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
       </div>
@@ -55,6 +89,25 @@ export default function Topbar() {
           />
         </Link>
       </div>
+      {searchResults && (
+        <div className="searchResults">
+          {searchResults.users.map((result) => (
+            <div key={result._id} className="searchResult">
+              <img
+                src={result.profilePicture || PF + "person/noAvatar.png"}
+                alt=""
+                className="searchResultImg"
+              />
+              <span className="searchResultUsername">{result.username}</span>
+            </div>
+          ))}
+          {searchResults.posts.map((result) => (
+            <div key={result._id} className="searchResult">
+              {/* Renderizar información relevante de los posts, si es necesario */}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

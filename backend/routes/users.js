@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Post = require("../models/Post");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 
@@ -52,6 +53,41 @@ router.get("/", async (req, res) => {
     res.status(200).json(other);
   } catch (err) {
     res.status(500).json(err);
+  }
+});
+
+//OBTENER REGISTROS INGRESADOS POr EL USUARIO
+router.post('/search', async (req, res) => {
+  try {
+    const { query } = req.body;
+
+    // Realizar la agregación en la colección Users
+    const usersResult = await User.aggregate([
+      {
+        $match: {
+          $or: [
+            { username: { $regex: query, $options: 'i' } },
+            { email: { $regex: query, $options: 'i' } },
+          ],
+        },
+      },
+    ]);
+
+    // Realizar la agregación en la colección Posts
+    const postsResult = await Post.aggregate([
+      {
+        $match: {
+          $or: [
+            { desc: { $regex: query, $options: 'i' } },
+            { userId: { $in: usersResult.map(user => user._id) } },
+          ],
+        },
+      },
+    ]);
+
+    res.status(200).json({ users: usersResult, posts: postsResult });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
