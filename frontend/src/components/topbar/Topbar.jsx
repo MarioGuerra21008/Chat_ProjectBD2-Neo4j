@@ -1,6 +1,6 @@
 import "./topbar.css";
 import { Search, Person, Chat, Notifications, ExitToApp } from "@material-ui/icons";
-import { IconButton } from "@material-ui/core";
+import { IconButton, MenuItem,MenuList, Paper, Popper } from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
@@ -11,7 +11,7 @@ export default function Topbar() {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(null);
-
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handleClick = async () => {
     try {
@@ -29,6 +29,7 @@ export default function Topbar() {
         const searchData = await response.json();
         console.log(searchData);
         setSearchResults(searchData);
+        setAnchorEl(anchorEl ? null : document.body);
         // Aquí puedes hacer algo con los datos de búsqueda, por ejemplo, redirigir a una página de resultados
       } else {
         console.error("Error en la solicitud:", response.status);
@@ -36,6 +37,14 @@ export default function Topbar() {
     } catch (error) {
       console.error("Error al procesar la solicitud:", error);
     }
+  };
+
+  const handleToggle = (event) => {
+    setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -56,6 +65,41 @@ export default function Topbar() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
+          {/* Mostrar resultados como MenuItem en un Popper */}
+          <Popper open={Boolean(anchorEl)} anchorEl={anchorEl} role={undefined} transition disablePortal>
+            {({ TransitionProps, placement }) => (
+              <div {...TransitionProps} style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}>
+                <Paper>
+                  <MenuList autoFocusItem={Boolean(anchorEl)} id="menu-list-grow">
+                    {searchResults && (
+                      <>
+                        {searchResults.users.map((result) => (
+                          <MenuItem key={result._id} onClick={handleClose}>
+                            <Link to={`/profile/${result.username}`} style={{ textDecoration: "none", color: "inherit" }}>
+                              <img
+                                src={result.profilePicture || PF + "person/noAvatar.png"}
+                                alt=""
+                                className="searchResultImg"
+                              />
+                              <span className="searchResultUsername">{result.username}</span>
+                            </Link>
+                          </MenuItem>
+                        ))}
+                        {searchResults.posts.map((result) => (
+                          <MenuItem key={result._id} onClick={handleClose}>
+                            {/* Mostrar la descripción y la imagen del post */}
+                            <div>
+                              <span className="searchResultDesc">{result.desc}</span>
+                            </div>
+                          </MenuItem>
+                        ))}
+                      </>
+                    )}
+                  </MenuList>
+                </Paper>
+              </div>
+            )}
+          </Popper>
         </div>
       </div>
       <div className="topbarRight">
@@ -89,25 +133,6 @@ export default function Topbar() {
           />
         </Link>
       </div>
-      {searchResults && (
-        <div className="searchResults">
-          {searchResults.users.map((result) => (
-            <div key={result._id} className="searchResult">
-              <img
-                src={result.profilePicture || PF + "person/noAvatar.png"}
-                alt=""
-                className="searchResultImg"
-              />
-              <span className="searchResultUsername">{result.username}</span>
-            </div>
-          ))}
-          {searchResults.posts.map((result) => (
-            <div key={result._id} className="searchResult">
-              {/* Renderizar información relevante de los posts, si es necesario */}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }

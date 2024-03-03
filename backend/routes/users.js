@@ -71,6 +71,7 @@ router.post('/search', async (req, res) => {
           ],
         },
       },
+      { $limit: 3 }
     ]);
 
     // Realizar la agregación en la colección Posts
@@ -83,6 +84,7 @@ router.post('/search', async (req, res) => {
           ],
         },
       },
+      { $limit: 3 }
     ]);
 
     res.status(200).json({ users: usersResult, posts: postsResult });
