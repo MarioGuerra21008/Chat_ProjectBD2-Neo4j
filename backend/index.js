@@ -1,58 +1,45 @@
-const express = require("express");
+// index.js
+
+const express = require('express');
 const app = express();
-const mongoose = require("mongoose");
-const dotenv = require("dotenv");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const multer = require("multer");
-const userRoute = require("./routes/users");
-const authRoute = require("./routes/auth");
-const postRoute = require("./routes/posts");
-const conversationRoute = require("./routes/conversations");
-const messagesRoute = require("./routes/messages");
-const router = express.Router();
-const path = require("path");
+const dotenv = require('dotenv');
+const helmet = require('helmet');
+const morgan = require('morgan');
+const multer = require('multer');
+const neo4j = require('neo4j-driver');
+const path = require('path');
+const cors = require('cors');
 
 dotenv.config();
 
-mongoose.connect(
-  process.env.MONGO_URL,
-  { useNewUrlParser: true, useUnifiedTopology: true },
-  () => {
-    console.log("Connected to MongoDB");
-  }
-);
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+const corsOptions = {
+  origin: 'http://localhost:3000', // El dominio del frontend
+  optionsSuccessStatus: 200 // Algunos navegadores requieren este código de estado para permitir las solicitudes CORS
+};
 
-//middleware
+app.use(cors(corsOptions));
+
+// Middleware para analizar el cuerpo de las solicitudes en formato JSON
+app.use(express.json());
+
+
+// Conexión a Neo4j
+const uri = 'neo4j+s://32aa479e.databases.neo4j.io';
+const user = 'neo4j';
+const password = 'kVlo04Ku2n2fZoLXh-fRMdzB8x5Jb9WhnAneDQh7Lss';
+const neo4jDriver = neo4j.driver(uri, neo4j.auth.basic(user, password));
+
+// Rutas
+require('./routes/auth')(app); // Importa y llama la función pasando 'app' como argumento
+
+// Configuración del servidor
 app.use(express.json());
 app.use(helmet());
-app.use(morgan("common"));
+app.use(morgan('common'));
+app.use('/images', express.static(path.join(__dirname, 'public/images')));
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/images");
-  },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-  },
-});
-
-const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  try {
-    return res.status(200).json("File uploded successfully");
-  } catch (error) {
-    console.error(error);
-  }
-});
-
-app.use("/api/auth", authRoute);
-app.use("/api/users", userRoute);
-app.use("/api/posts", postRoute);
-app.use("/api/conversations", conversationRoute);
-app.use("/api/messages", messagesRoute);
+// Otras configuraciones y rutas...
 
 app.listen(8800, () => {
-  console.log("Backend server is running!");
+  console.log('Backend server is running!');
 });

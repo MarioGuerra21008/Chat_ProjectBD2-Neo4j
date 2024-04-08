@@ -1,58 +1,89 @@
-const router = require("express").Router();
-const User = require("../models/User");
-const bcrypt = require("bcrypt");
+const express = require('express');
+const router = express.Router();
+const neo4j = require('neo4j-driver');
+const bcrypt = require('bcrypt');
 
-//REGISTER
-router.post("/register", async (req, res) => {
-  console.log("pass: ", req.body.password)
-  try {
-    //generate new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+// URL de conexión proporcionada por AuraDB
+const uri = "neo4j+s://32aa479e.databases.neo4j.io";
 
-    //create new user
-    const newUser = new User({
-      username: req.body.username,
-      email: req.body.email,
-      passwordHash: hashedPassword,
-      password: req.body.password
-    });
+// Credenciales de autenticación proporcionadas por AuraDB
+const user = "neo4j";
+const password = "kVlo04Ku2n2fZoLXh-fRMdzB8x5Jb9WhnAneDQh7Lss";
 
-    //save user and respond
-    const user = await newUser.save();
-    res.status(200).json(user);
-  } catch (err) {
-    console.error(err);  // Imprime el error en la consola del servidor
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
+// Crea una nueva instancia del driver de Neo4j
+const driver = neo4j.driver(uri, neo4j.auth.basic(user, password));
 
-//LOGIN
-//LOGIN
-router.post("/login", async (req, res) => {
-  try {
-    const user = await User.findOne({ email: req.body.email });
-    console.log("user: ", user);
+module.exports = function (app) {
+  router.post("/register", async (req, res) => {
+    console.log("ENTRA")
     
+    const { username, email, password, confirmPassword } = req.body;
 
-    if (!user) {
-      console.log("Entra?")
-      return res.status(404).json("User not found"); // Cambiado a un return aquí
+
+    const session = driver.session();
+
+    try {
+      const result = await session.run(
+        `
+        CREATE (u:User {
+          username: $username,
+          email: $email,
+          passwordHash: $passwordHash,
+          profilePicture: '',
+          coverPicture: '',
+          followers: [],
+          following: [],
+          createdAt: timestamp(),
+          updatedAt: timestamp()
+        })
+        RETURN u
+        `,
+        {
+          username,
+          email,
+          passwordHash: bcrypt.hashSync(password, 10) // Hashea la contraseña antes de guardarla
+        }
+      );
+
+      const user = result.records[0].get('u').properties;
+      res.status(200).json(user);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+      await session.close();
     }
+  });
 
-    console.log("Ya no sigue")
+  router.post("/login", async (req, res) => {
+    const session = driver.session();
 
-    const validPassword = await bcrypt.compare(req.body.password, user.passwordHash);
-    if (!validPassword) {
-      return res.status(400).json("Wrong password"); // Cambiado a un return aquí
+    try {
+      const result = await session.run(
+        'MATCH (u:User { email: $email }) RETURN u',
+        { email: req.body.email }
+      );
+
+      if (result.records.length === 0) {
+        return res.status(404).json("User not found");
+      }
+
+      const user = result.records[0].get('u').properties;
+
+      const validPassword = await bcrypt.compare(req.body.password, user.passwordHash);
+      if (!validPassword) {
+        return res.status(400).json("Wrong password");
+      }
+
+      res.status(200).json(user);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+      await session.close();
     }
+  });
 
-    res.status(200).json(user);
-  } catch (err) {
-    console.error(err);  // Imprime el error en la consola del servidor
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-
-module.exports = router;
+  // Monta el enrutador en la aplicación Express
+  app.use("/api/auth", router);
+};
