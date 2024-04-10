@@ -6,9 +6,12 @@ from datetime import datetime, timedelta
 
 fake = Faker()
 
+# Lista de hobbies específicos
+specific_hobbies = ["Deportes", "Musica", "Entretenimiento", "Farandula", "Cocina", "Arte", "Videojuegos", "Peliculas", "Tecnología", "Ciencia"]
+
 # Generar datos para User
 users = []
-for i in range(5000):
+for i in range(1250):
     user_id = f"User_{i}"
     username = fake.user_name()
     password = 'password123'  # Misma contraseña para todos los usuarios
@@ -16,12 +19,12 @@ for i in range(5000):
     date_created = fake.date_time_this_decade()
     followers = random.randint(0, 10000)
     following = random.randint(0, 10000)
-    hobby = fake.word()
+    hobby = random.choice(specific_hobbies)
     users.append((user_id, username, password, password_hash, date_created, followers, following, hobby))
 
 # Generar datos para Post
 posts = []
-for i in range(5000):
+for i in range(1250):
     post_id = f"Post_{i}"
     username = random.choice(users)[1]  # Tomar un nombre de usuario aleatorio
     post = fake.text()
@@ -29,18 +32,18 @@ for i in range(5000):
     post_updated = random.choice([True, False])
     likes = random.sample([user[0] for user in users], random.randint(0, len(users)//10))  # Muestra aleatoria de usuarios
     image = fake.image_url()
-    hobby = fake.word()
+    hobby = random.choice(specific_hobbies)
     posts.append((post_id, username, post, post_created, post_updated, likes, image, hobby))
 
 # Generar datos para Conversation
 conversations = []
-for i in range(5000):
+for i in range(1250):
     conv_id = f"Conversation_{i}"
     member1 = random.choice(users)[1]
     member2 = random.choice(users)[1]
     conversation_name = fake.sentence()
     conversation_created = fake.date_time_this_decade()
-    messages_quantity = random.randint(0, 1000)
+    messages_quantity = random.randint(2, 10)  # Entre 2 y 10 mensajes por conversación
     conversations.append((conv_id, member1, member2, conversation_name, conversation_created, messages_quantity))
 
 # Generar datos para Message y vincular con Conversation
@@ -57,14 +60,13 @@ for conv in conversations:
 
 # Generar datos para Hobby
 hobbies = []
-for i in range(5000):
+for i, hobby_name in enumerate(specific_hobbies):
     hobby_id = f"Hobby_{i}"
-    name = fake.word()
     description = fake.sentence()
     followers = random.sample([user[0] for user in users], random.randint(0, len(users)//10))  # Muestra aleatoria de usuarios
     topics = [fake.word() for _ in range(random.randint(1, 5))]
     posts_tags = fake.text()
-    hobbies.append((hobby_id, name, description, followers, topics, posts_tags))
+    hobbies.append((hobby_id, hobby_name, description, followers, topics, posts_tags))
 
 # Crear DataFrames de pandas
 users_df = pd.DataFrame(users, columns=['ID', 'Username', 'Password', 'PasswordHash', 'Date_created', 'Followers', 'Following', 'Hobby'])
@@ -72,6 +74,13 @@ posts_df = pd.DataFrame(posts, columns=['ID', 'Username', 'Post', 'Post_created'
 conversations_df = pd.DataFrame(conversations, columns=['ID', 'Member1', 'Member2', 'Conversation_name', 'Conversation_created', 'Messages_quantity'])
 messages_df = pd.DataFrame(messages, columns=['ID', 'Username', 'Text', 'Date_created', 'Date_updated', 'Media', 'Conversation_id'])
 hobbies_df = pd.DataFrame(hobbies, columns=['ID', 'Name', 'Description', 'Followers', 'Topics', 'Posts'])
+
+# Guardar los DataFrames como archivos CSV
+users_df.to_csv('users.csv', index=False)
+posts_df.to_csv('posts.csv', index=False)
+conversations_df.to_csv('conversations.csv', index=False)
+messages_df.to_csv('messages.csv', index=False)
+hobbies_df.to_csv('hobbies.csv', index=False)
 
 # Guardar los DataFrames como archivos CSV
 users_df.to_csv('users.csv', index=False)
@@ -95,7 +104,7 @@ for post in posts:
     date_posted = post[3]
     popularity = random.randint(1, 1000)
     relevance = random.randint(1, 10)
-    posts_tags.append((post[2], hobby, date_posted, popularity, relevance))
+    posts_tags.append((post[0], hobby, date_posted, popularity, relevance))
 
 follows = []
 for user1 in users:
@@ -107,7 +116,7 @@ for user1 in users:
 
 posted = []
 for user in users:
-    post = random.choice(posts)[2]  # Tomar un post aleatorio
+    post = random.choice(posts)[0]  # Tomar un post aleatorio
     date_posted = fake.date_time_this_decade()
     post_type = random.choice(['text', 'image', 'video'])
     visibility = random.choice(['public', 'private', 'friends'])
@@ -115,7 +124,7 @@ for user in users:
 
 likes_post = []
 for user in users:
-    post = random.choice(posts)[2]  # Tomar un post aleatorio
+    post = random.choice(posts)[0]  # Tomar un post aleatorio
     date_liked = fake.date_time_this_decade()
     comment = fake.text()
     emoticon = random.choice(['😃', '😍', '😊', '😂', '😎', '😒', '😡'])
@@ -147,7 +156,7 @@ for conv in conversations:
 
 related_to = []
 for hobby in hobbies:
-    post = random.choice(posts)[2]  # Tomar un post aleatorio
+    post = random.choice(posts)[0]  # Tomar un post aleatorio
     date_related = fake.date_time_this_decade()
     relevance = random.randint(1, 10)
     comment = fake.text()
