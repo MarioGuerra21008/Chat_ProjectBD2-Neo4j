@@ -26,6 +26,7 @@ module.exports = function (app) {
       const result = await session.run(
         `
         CREATE (u:User {
+          id: apoc.create.uuid(),
           username: $username,
           email: $email,
           passwordHash: $passwordHash,
@@ -57,8 +58,9 @@ module.exports = function (app) {
 
   router.post("/login", async (req, res) => {
     const session = driver.session();
-
+    console.log("EMAIL: ", req.body.email)
     try {
+      
       const result = await session.run(
         'MATCH (u:User { email: $email }) RETURN u',
         { email: req.body.email }
