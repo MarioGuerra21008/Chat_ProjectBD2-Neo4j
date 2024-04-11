@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 import React from "react";
 
 export default function Post({ post, onUpdate }) {
-  const [like, setLike] = useState(post.likes.length);
+  const [like, setLike] = useState(1);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -73,7 +73,7 @@ export default function Post({ post, onUpdate }) {
 
   const likeHandler = () => {
     try {
-      axios.put("/posts/" + post._id + "/like", { userId: currentUser._id });
+      axios.put("/posts/" + post._id + "/like", { userId: currentUser.id });
     } catch (err) {}
     setLike(isLiked ? like - 1 : like + 1);
     setIsLiked(!isLiked);
@@ -81,7 +81,7 @@ export default function Post({ post, onUpdate }) {
 
   const handleSaveChanges = async () => {
     try {
-      const updatedPost = await axios.put(`/posts/${post._id}`, {
+      const updatedPost = await axios.put(`/posts/${post.id}`, {
         userId: currentUser._id,
         desc: updatedDesc,
       });

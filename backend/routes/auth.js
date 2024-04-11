@@ -3,24 +3,13 @@ const router = express.Router();
 const neo4j = require('neo4j-driver');
 const bcrypt = require('bcrypt');
 
-// URL de conexión proporcionada por AuraDB
-const uri = "neo4j+s://32aa479e.databases.neo4j.io";
-
-// Credenciales de autenticación proporcionadas por AuraDB
-const user = "neo4j";
-const password = "kVlo04Ku2n2fZoLXh-fRMdzB8x5Jb9WhnAneDQh7Lss";
-
-// Crea una nueva instancia del driver de Neo4j
-const driver = neo4j.driver(uri, neo4j.auth.basic(user, password));
-
 module.exports = function (app) {
   router.post("/register", async (req, res) => {
-    console.log("ENTRA")
+    console.log("ENTRA");
     
-    const { username, email, password, confirmPassword } = req.body;
-
-
-    const session = driver.session();
+    const { username, email, password } = req.body;
+    // Asumiendo que bcrypt ya está requerido arriba en tu archivo
+    const session = req.neo4jDriver.session(); // Obtiene la sesión del driver inyectado
 
     try {
       const result = await session.run(
@@ -42,7 +31,7 @@ module.exports = function (app) {
         {
           username,
           email,
-          passwordHash: bcrypt.hashSync(password, 10) // Hashea la contraseña antes de guardarla
+          passwordHash: bcrypt.hashSync(password, 10) // Asegúrate de tener bcrypt disponible
         }
       );
 
@@ -57,8 +46,8 @@ module.exports = function (app) {
   });
 
   router.post("/login", async (req, res) => {
-    const session = driver.session();
-    console.log("EMAIL: ", req.body.email)
+    const session = req.neo4jDriver.session(); // Obtiene la sesión del driver inyectado
+    console.log("EMAIL: ", req.body.email);
     try {
       
       const result = await session.run(

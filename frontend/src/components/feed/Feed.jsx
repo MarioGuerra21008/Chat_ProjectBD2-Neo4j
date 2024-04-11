@@ -12,9 +12,10 @@ export default function Feed({ username }) {
 
   useEffect(() => {
     const fetchPosts = async () => {
+      console.log("Username: ", user.username)
       const res = username
-        ? await axios.get("/posts/profile/" + username)
-        : await axios.get("/posts/timeline/" + user._id);
+        ? await axios.get("http://localhost:8800/api/posts/profile/" + user.username)
+        : await axios.get("http://localhost:8800/api/posts/timeline/" + user.id);
       setPosts(
         res.data.sort((p1, p2) => {
           return new Date(p2.createdAt) - new Date(p1.createdAt);
@@ -22,16 +23,16 @@ export default function Feed({ username }) {
       );
     };
     fetchPosts();
-  }, [username, user._id]);
+  }, [user.username, user.id]);
 
   const updatePosts = (postId, operationType, updatedPost = null) => {
     let updatedPosts;
   
     if (operationType === 'delete') {
-      updatedPosts = posts.filter((post) => post._id !== postId);
+      updatedPosts = posts.filter((post) => post.id !== postId);
     } else if (operationType === 'update' && updatedPost) {
       updatedPosts = posts.map((post) =>
-        post._id === postId ? updatedPost : post
+        post.id === postId ? updatedPost : post
       );
       window.location.reload();
     } else {
@@ -48,7 +49,7 @@ export default function Feed({ username }) {
       <div className="feedWrapper">
         {(!username || username === user.username) && <Share />}
         {posts.map((p) => (
-          <Post key={p._id} post={p} onUpdate={updatePosts} />
+          <Post key={p.id} post={p} onUpdate={updatePosts} />
         ))}
       </div>
     </div>

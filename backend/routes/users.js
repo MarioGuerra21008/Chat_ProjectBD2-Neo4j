@@ -93,26 +93,35 @@ router.post('/search', async (req, res) => {
   }
 });
 
-//get friends
 router.get("/friends/:userId", async (req, res) => {
-  console.log("Id del usuario", req.params.userId)
+  console.log("Id del usuario", req.params.userId);
+  const session = req.neo4jDriver.session();
+
   try {
-    const user = await User.findById(req.params.userId);
-    const friends = await Promise.all(
-      user.followings.map((friendId) => {
-        return User.findById(friendId);
-      })
+    // Reemplaza 'userId' con el nombre de campo apropiado si es necesario
+    const result = await session.run(
+      `MATCH (u:User {id: $userId})-[:FOLLOWS]->(f:User)
+       RETURN f.id AS id, f.username AS username, f.profilePicture AS profilePicture`,
+      { userId: req.params.userId }
     );
-    let friendList = [];
-    friends.map((friend) => {
-      const { _id, username, profilePicture } = friend;
-      friendList.push({ _id, username, profilePicture });
+
+    const friends = result.records.map(record => {
+      return {
+        _id: record.get('id'), // Ajusta según cómo manejes los IDs
+        username: record.get('username'),
+        profilePicture: record.get('profilePicture'),
+      };
     });
-    res.status(200).json(friendList)
+
+    res.status(200).json(friends);
   } catch (err) {
-    res.status(500).json(err);
+    console.error(err);
+    res.status(500).json(err.message);
+  } finally {
+    await session.close();
   }
 });
+
 
 //follow a user
 

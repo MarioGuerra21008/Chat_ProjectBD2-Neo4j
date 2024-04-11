@@ -29,8 +29,15 @@ const user = 'neo4j';
 const password = 'kVlo04Ku2n2fZoLXh-fRMdzB8x5Jb9WhnAneDQh7Lss';
 const neo4jDriver = neo4j.driver(uri, neo4j.auth.basic(user, password));
 
+// Middleware para adjuntar el driver de Neo4j a la solicitud
+app.use((req, res, next) => {
+  req.neo4jDriver = neo4jDriver;
+  next();
+});
+
 // Rutas
 require('./routes/auth')(app); // Importa y llama la función pasando 'app' como argumento
+require('./routes/posts')(app);
 
 // Configuración del servidor
 app.use(express.json());
