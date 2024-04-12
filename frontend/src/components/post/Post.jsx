@@ -9,7 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 import React from "react";
 
 export default function Post({ post, onUpdate }) {
-  const [like, setLike] = useState(1);
+  const [like, setLike] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
@@ -18,7 +18,7 @@ export default function Post({ post, onUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedDesc, setUpdatedDesc] = useState(post.desc);
 
-  console.log(":C: ", post);
+  //console.log(":C: ", post);
 
   useEffect(() => {
     setIsLiked(2);
@@ -57,17 +57,17 @@ export default function Post({ post, onUpdate }) {
       console.log('Borrar publicación');
   
       // Supongamos que postId es el ID de la publicación que quieres borrar
-      const postId = post._id;
+      const postId = post.id;
   
       // Enviar la solicitud DELETE al backend
-      console.log("userID: ", post.userId);
-      const response = await axios.delete(`posts/${postId}`, {
+      //console.log("userID: ", post.userId);
+      const response = await axios.delete(`http://localhost:8800/api/posts/${postId}`, {
         data: { userId: post.userId}, // Agrega el userId necesario en el cuerpo de la solicitud
       });
   
       // Manejar la respuesta del servidor
       onUpdate(postId, 'delete');
-      console.log(response.data); // Deberías ver "the post has been deleted" si la operación fue exitosa
+      //console.log(response.data); // Deberías ver "the post has been deleted" si la operación fue exitosa
     } catch (error) {
       console.error('Error al borrar la publicación:', error);
     }
@@ -75,16 +75,16 @@ export default function Post({ post, onUpdate }) {
 
   const likeHandler = () => {
     try {
-      axios.put("/posts/" + post._id + "/like", { userId: currentUser.id });
+      axios.put("http://localhost:8800/api/posts/" + post.id + "/like", { userId: currentUser.id });
     } catch (err) {}
-    setLike(isLiked ? like - 1 : like + 1);
+    setLike(isLiked ? like + 1 : like - 1);
     setIsLiked(!isLiked);
   };
 
   const handleSaveChanges = async () => {
     try {
-      const updatedPost = await axios.put(`/posts/${post.id}`, {
-        userId: currentUser._id,
+      const updatedPost = await axios.put(`http://localhost:8800/api/posts/${post.id}`, {
+        userId: currentUser.id,
         desc: updatedDesc,
       });
 

@@ -20,10 +20,10 @@ export default function Rightbar({ user }) {
     const getFriends = async () => {
       //console.log("user.id: ", user.id);
       try {
-        const friendList = await axios.get("/users/friends/" + user.id);
+        const friendList = await axios.get("http://localhost:8800/api/users/friends/" + user.id);
         setFriends(friendList.data);
       } catch (err) {
-        console.log(err);
+        console.log("no pasa nada: ",err);
       }
     };
     getFriends();

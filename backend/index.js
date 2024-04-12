@@ -23,6 +23,15 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.body.name);
+  },
+});
+
 // Conexión a Neo4j
 const uri = 'neo4j+s://32aa479e.databases.neo4j.io';
 const user = 'neo4j';
@@ -33,6 +42,16 @@ const neo4jDriver = neo4j.driver(uri, neo4j.auth.basic(user, password));
 app.use((req, res, next) => {
   req.neo4jDriver = neo4jDriver;
   next();
+});
+
+
+const upload = multer({ storage: storage });
+app.post("/api/upload", upload.single("file"), (req, res) => {
+  try {
+    return res.status(200).json("File uploded successfully");
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 // Rutas
