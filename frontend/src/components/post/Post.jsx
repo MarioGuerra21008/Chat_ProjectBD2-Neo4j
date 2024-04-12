@@ -18,13 +18,15 @@ export default function Post({ post, onUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedDesc, setUpdatedDesc] = useState(post.desc);
 
+  console.log(":C: ", post);
+
   useEffect(() => {
-    setIsLiked(post.likes.includes(currentUser._id));
-  }, [currentUser._id, post.likes]);
+    setIsLiked(2);
+  }, [currentUser.id, post.likes]);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await axios.get(`/users?userId=${post.userId}`);
+      const res = await axios.get(`http://localhost:8800/api/users?userId=${post.userId}`);
       setUser(res.data);
     };
     fetchUser();
@@ -111,7 +113,7 @@ export default function Post({ post, onUpdate }) {
               />
             </Link>
             <span className="postUsername">{user.username}</span>
-            <span className="postDate">{format(post.createdAt)}</span>
+            
           </div>
           <div className="postTopRight">
             <IconButton onClick={handleMoreVertClick}>

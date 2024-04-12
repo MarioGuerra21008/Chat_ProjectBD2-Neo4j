@@ -21,6 +21,7 @@ export default function Feed({ username }) {
           return new Date(p2.createdAt) - new Date(p1.createdAt);
         })
       );
+      
     };
     fetchPosts();
   }, [user.username, user.id]);
@@ -40,6 +41,7 @@ export default function Feed({ username }) {
       return;
     }
   
+    console.log("posts: ", posts)
     setPosts(updatedPosts);
   };
   

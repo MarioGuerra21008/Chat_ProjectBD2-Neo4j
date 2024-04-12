@@ -23,8 +23,8 @@ module.exports = function (app) {
           coverPicture: '',
           followers: [],
           following: [],
-          createdAt: timestamp(),
-          updatedAt: timestamp()
+          createdAt: datetime(),
+          updatedAt: datetime()
         })
         RETURN u
         `,

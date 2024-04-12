@@ -38,6 +38,7 @@ app.use((req, res, next) => {
 // Rutas
 require('./routes/auth')(app); // Importa y llama la función pasando 'app' como argumento
 require('./routes/posts')(app);
+require('./routes/users')(app);
 
 // Configuración del servidor
 app.use(express.json());

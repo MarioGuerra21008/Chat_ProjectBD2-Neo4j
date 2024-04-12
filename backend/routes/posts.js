@@ -78,10 +78,8 @@ module.exports = function (app) {
 
   router.get("/timeline/:id", async (req, res) => {
     const session = req.neo4jDriver.session(); 
-    console.log("userID: ", req.params.userId)
     const userId = req.params.id;
     console.log("userID: ", userId)
-    console.log("XDDDDDDDDD")
     try {
       // Consulta para obtener las publicaciones del usuario y de sus amigos.
       const result = await session.run(
@@ -104,7 +102,7 @@ module.exports = function (app) {
           posts.push(record.get('fp').properties);
         }
       });
-
+      
       res.status(200).json(posts);
     } catch (err) {
       console.error(err);
