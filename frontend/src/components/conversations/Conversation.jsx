@@ -6,21 +6,25 @@ import React from "react";
 export default function Conversation({ conversation, currentUser }) {
   const [user, setUser] = useState(null);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-  console.log("Perfil del usuario: ", currentUser.profilePicture)
+  //console.log("Perfil del usuario: ", currentUser);
+  //console.log("Perfil del usuario: ", conversation);
+  
   useEffect(() => {
-    
-    const friendId = conversation.members.find((m) => m !== currentUser._id);
-
-    const getUser = async () => {
+    const getFriendId = async () => {
       try {
-        const res = await axios("/users?userId=" + friendId);
-        setUser(res.data);
+        const res = await axios.get(`http://localhost:8800/api/conversations/${currentUser.id}/${conversation.id}`);
+        const friendId = res.data.friendId;
+        // Ahora obtener los detalles del amigo
+        const userDetails = await axios.get(`http://localhost:8800/api/users?userId=${friendId}`);
+        setUser(userDetails.data);
       } catch (err) {
         console.log(err);
       }
     };
-    getUser();
+  
+    getFriendId();
   }, [currentUser, conversation]);
+  
 
   return (
     <div className="conversation">

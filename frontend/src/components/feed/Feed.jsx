@@ -23,7 +23,9 @@ export default function Feed({ username }) {
       );
       
     };
+    
     fetchPosts();
+    
   }, [user.username, user.id]);
 
   const updatePosts = (postId, operationType, updatedPost = null) => {

@@ -9,6 +9,7 @@ import { AuthContext } from "../../context/AuthContext";
 import React from "react";
 
 export default function Post({ post, onUpdate }) {
+  console.log("post: ",post)
   const [like, setLike] = useState(0);
   const [isLiked, setIsLiked] = useState(false);
   const [user, setUser] = useState({});
@@ -19,6 +20,7 @@ export default function Post({ post, onUpdate }) {
   const [updatedDesc, setUpdatedDesc] = useState(post.desc);
 
   //console.log(":C: ", post);
+  //console.log(":C2: ", currentUser.id);
 
   useEffect(() => {
     setIsLiked(2);
@@ -26,7 +28,7 @@ export default function Post({ post, onUpdate }) {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await axios.get(`http://localhost:8800/api/users?userId=${post.userId}`);
+      const res = await axios.get(`http://localhost:8800/api/users?userId=${post.properties.userId}`);
       setUser(res.data);
     };
     fetchUser();
@@ -51,22 +53,26 @@ export default function Post({ post, onUpdate }) {
   };
 
   const handleBorrarClick = async () => {
-    // Lógica para la opción "Borrar publicación"
+
     try {
-      // Lógica para la opción "Borrar publicación"
-      console.log('Borrar publicación');
+      
   
       // Supongamos que postId es el ID de la publicación que quieres borrar
-      const postId = post.id;
+      const postId = post.properties.id;
   
+      // Lógica para la opción "Borrar publicación"
+      console.log('Borrar publicación: ', post.properties.id);
+
       // Enviar la solicitud DELETE al backend
       //console.log("userID: ", post.userId);
       const response = await axios.delete(`http://localhost:8800/api/posts/${postId}`, {
-        data: { userId: post.userId}, // Agrega el userId necesario en el cuerpo de la solicitud
+        data: { userId: post.properties.userId}, // Agrega el userId necesario en el cuerpo de la solicitud
       });
   
       // Manejar la respuesta del servidor
       onUpdate(postId, 'delete');
+      handleModalClose();
+      window.location.reload();
       //console.log(response.data); // Deberías ver "the post has been deleted" si la operación fue exitosa
     } catch (error) {
       console.error('Error al borrar la publicación:', error);
@@ -83,7 +89,7 @@ export default function Post({ post, onUpdate }) {
 
   const handleSaveChanges = async () => {
     try {
-      const updatedPost = await axios.put(`http://localhost:8800/api/posts/${post.id}`, {
+      const updatedPost = await axios.put(`http://localhost:8800/api/posts/${post.properties.id}`, {
         userId: currentUser.id,
         desc: updatedDesc,
       });
@@ -151,8 +157,8 @@ export default function Post({ post, onUpdate }) {
           </div>
         </div>
         <div className="postCenter">
-          <span className="postText">{post?.desc}</span>
-          <img className="postImg" src={PF + post.img} alt="" />
+          <span className="postText">{post?.properties.desc}</span>
+          <img className="postImg" src={PF + post.properties.img} alt="" />
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">

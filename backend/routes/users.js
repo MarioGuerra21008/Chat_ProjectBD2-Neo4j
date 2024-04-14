@@ -49,7 +49,7 @@ module.exports = function (app) {
     const username = req.query.username;
   
     const session = req.neo4jDriver.session(); 
-  
+    //console.log("Dentro: ", userId)
     try {
       let user;
       if (userId) {

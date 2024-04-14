@@ -21,14 +21,14 @@ export default function Messenger(){
     useEffect(() => {
         const getConversations = async () => {
           try {
-            const res = await axios.get("/conversations/" + user._id);
+            const res = await axios.get("http://localhost:8800/api/conversations/" + user.id);
             setConversations(res.data);
           } catch (err) {
             console.log("xd",err);
           }
         };
         getConversations();
-      }, [user._id]);
+      }, [user.id]);
 
     useEffect(() => {
         arrivalMessage &&
@@ -39,7 +39,7 @@ export default function Messenger(){
     useEffect(() => {
         const getMessages = async () => {
           try {
-            const res = await axios.get("/messages/" + currentChat?._id);
+            const res = await axios.get("http://localhost:8800/api/messages/" + currentChat?._id);
             setMessages(res.data);
           } catch (err) {
             console.log(err);
@@ -92,7 +92,7 @@ export default function Messenger(){
                 <div className="chatBoxTop">
                   {messages.map((m) => (
                     <div ref={scrollRef}>
-                      <Message message={m} own={m.sender === user._id} currentUser={user} />
+                      <Message message={m} own={m.sender === user.id} currentUser={user} />
                     </div>
                   ))}
                 </div>

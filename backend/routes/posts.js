@@ -87,7 +87,7 @@ module.exports = function (app) {
   router.delete("/:id", async (req, res) => {
     const postId = req.params.id;
     const userId = req.body.userId;
-  
+    //console.log("postId: ", req.body);
     const session = req.neo4jDriver.session(); 
   
     try {
@@ -99,7 +99,9 @@ module.exports = function (app) {
       );
   
       const ownerUserId = verifyPost.records[0]?.get('ownerUserId');
-  
+      //console.log("ownerUserId: ", ownerUserId);
+      //console.log("UserId: ", userId);
+
       if (!ownerUserId) {
         res.status(404).json("post not found");
         return;
@@ -198,23 +200,16 @@ module.exports = function (app) {
         `MATCH (u:User)-[:POSTED]->(p:Post)
         WHERE u.id = $userId
         OPTIONAL MATCH (u)-[:FOLLOWS]->(f:User)-[:POSTED]->(fp:Post)
-        RETURN p, fp
-        ORDER BY p.createdAt DESC, fp.createdAt DESC
+        WITH p, COLLECT(DISTINCT fp) AS fps
+        UNWIND (fps + [p]) AS allPosts
+        RETURN DISTINCT allPosts
+        ORDER BY allPosts.createdAt DESC
         LIMIT 10`, // Ajusta el límite según necesites
         { userId }
       );
 
       // Aquí asumimos que quieres mezclar y luego ordenar todas las publicaciones juntas. Ajusta según necesites.
-      const posts = [];
-      result.records.forEach(record => {
-        if (record.get('p')) {
-          posts.push(record.get('p').properties);
-        }
-        if (record.get('fp')) {
-          posts.push(record.get('fp').properties);
-        }
-      });
-      
+      const posts = result.records.map(record => record.get('allPosts'));
       res.status(200).json(posts);
     } catch (err) {
       console.error(err);

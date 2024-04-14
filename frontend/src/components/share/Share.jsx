@@ -18,6 +18,7 @@ export default function Share() {
   const [file, setFile] = useState(null);
 
   const submitHandler = async (e) => {
+    console.log("PF: ", PF);
     e.preventDefault();
     const newPost = {
       userId: user.id,
