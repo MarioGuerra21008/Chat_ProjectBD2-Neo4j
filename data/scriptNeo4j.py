@@ -172,11 +172,12 @@ for message in messages:
 
 chats_with = []
 for conv in conversations:
+    conversation = conv[0]
     user1, user2 = conv[1], conv[2]
     date_started = conv[4]
     duration = random.randint(1, 100)
     theme = conv[3]
-    chats_with.append((user1, user2, date_started, duration, theme))
+    chats_with.append((conversation, user1, user2, date_started, duration, theme))
 
 related_to = []
 for post in posts:
@@ -204,7 +205,7 @@ posted_df = pd.DataFrame(posted, columns=['Username', 'Post', 'Date_posted', 'Po
 likes_post_df = pd.DataFrame(likes_post, columns=['Username', 'Post', 'Date_liked', 'Comment'])
 in_relationship_with_df = pd.DataFrame(in_relationship_with, columns=['User1', 'User2', 'Date_relationship', 'Status', 'Duration'])
 belongs_to_df = pd.DataFrame(belongs_to, columns=['Message', 'Conversation_name', 'Date_sent', 'Message_type', 'Read'])
-chats_with_df = pd.DataFrame(chats_with, columns=['User1', 'User2', 'Date_started', 'Duration', 'Theme'])
+chats_with_df = pd.DataFrame(chats_with, columns=['Conversation', 'User1', 'User2', 'Date_started', 'Duration', 'Theme'])
 related_to_df = pd.DataFrame(related_to, columns=['Hobby', 'Post', 'Date_related', 'Relevance', 'Comment'])
 follows_topic_df = pd.DataFrame(follows_topic, columns=['Username', 'Hobby', 'Date_followed', 'Interest_level', 'Last_activity'])
 
