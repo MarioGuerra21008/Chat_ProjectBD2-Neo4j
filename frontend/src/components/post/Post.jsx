@@ -18,6 +18,7 @@ export default function Post({ post, onUpdate }) {
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedDesc, setUpdatedDesc] = useState(post.desc);
+  const [newLocation, setNewLocation] = useState('');
 
   //console.log(":C: ", post);
   //console.log(":C2: ", currentUser.id);
@@ -132,7 +133,37 @@ export default function Post({ post, onUpdate }) {
   const handleCommentClick = () => {
     console.log('Comment span clicked');
     // Aquí puedes agregar más lógica, como abrir un modal de comentarios
-  };  
+  };
+  
+  const handleEditLocationClick = async () => {
+    setNewLocation(''); // Restablecer el estado de la nueva ubicación
+    setIsModalOpen(true);
+    handleMenuClose(); // Cerrar el menú desplegable después de hacer clic en "Editar ubicación"
+  };
+  
+  const handleSaveLocation = async () => {
+    try {
+      const response = await axios.put(`http://localhost:8800/api/posts/${post.properties.id}/location`, {
+        userId: currentUser.id,
+        location: newLocation,
+      });
+      console.log(response.data); // Deberías ver un mensaje indicando que la ubicación se ha actualizado correctamente
+      // Puedes actualizar el estado del post si es necesario
+      setIsModalOpen(false); // Cerrar el modal después de guardar la ubicación
+    } catch (error) {
+      console.error('Error updating post location:', error);
+    }
+  };
+  
+  const handleDeleteLocationClick = async () => {
+    try {
+      const response = await axios.put(`http://localhost:8800/api/posts/${post.properties.id}/location/delete`);
+      console.log(response.data); // Deberías ver un mensaje indicando que la ubicación se ha eliminado correctamente
+      // Puedes actualizar el estado del post si es necesario
+    } catch (error) {
+      console.error('Error deleting post location:', error);
+    }
+  };
 
   return (
     <div className="post">
@@ -164,6 +195,8 @@ export default function Post({ post, onUpdate }) {
             >
               <MenuItem onClick={handleUpdateClick}>Editar publicación</MenuItem>
               <MenuItem onClick={handleBorrarClick}>Borrar publicación</MenuItem>
+              <MenuItem onClick={handleEditLocationClick}>Editar ubicación</MenuItem>
+              <MenuItem onClick={handleDeleteLocationClick}>Borrar ubicación</MenuItem>
             </Menu>
 
             <Modal
@@ -181,7 +214,17 @@ export default function Post({ post, onUpdate }) {
                   rows={10} // Ajusta la cantidad de filas según tus necesidades
                   fullWidth
                 />
+                <TextField
+                  label="Nueva ubicación"
+                  variant="outlined"
+                  value={newLocation}
+                  onChange={(e) => setNewLocation(e.target.value)}
+                  fullWidth
+                />
                 <Button onClick={handleSaveChanges}>
+                  <Edit></Edit>
+                </Button>
+                <Button onClick={handleSaveLocation}>
                   <Edit></Edit>
                 </Button>
               </div>

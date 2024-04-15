@@ -81,7 +81,6 @@ module.exports = function (app) {
     }
   });
 
-
   //delete a post
 
   router.delete("/:id", async (req, res) => {
@@ -128,6 +127,74 @@ module.exports = function (app) {
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Error deleting post", error: err.message });
+    } finally {
+      await session.close();
+    }
+  });
+
+  // Actualizar un post (incluyendo la propiedad "location")
+  router.put("/:id/location", async (req, res) => {
+    const postId = req.params.id;
+    const { userId, location, ...updateFields } = req.body; // Desestructura userId, location y los campos a actualizar
+
+    const session = req.neo4jDriver.session(); 
+
+    try {
+      // Primero verifica que el post pertenezca al usuario que intenta actualizarlo
+      const verifyPost = await session.run(
+        'MATCH (post:Post {id: $postId}) ' +
+        'RETURN post.userId AS ownerUserId',
+        { postId }
+      );
+
+      const ownerUserId = verifyPost.records[0]?.get('ownerUserId');
+
+      if (!ownerUserId) {
+        res.status(404).json("post not found");
+        return;
+      }
+
+      if (ownerUserId !== userId) {
+        res.status(403).json("you can update only your post");
+        return;
+      }
+
+      // Actualiza el post si el usuario es el propietario
+      const result = await session.run(
+        'MATCH (post:Post {id: $postId}) ' +
+        'SET post += $updateFields ' +
+        'RETURN post',
+        { postId, updateFields }
+      );
+
+      if (result.records.length > 0) {
+        res.status(200).json("the post has been updated");
+      } else {
+        res.status(404).json("no post found");
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error updating post", error: err.message });
+    } finally {
+      await session.close();
+    }
+  });
+
+  router.put("/:id/location/delete", async (req, res) => {
+    const postId = req.params.id;
+  
+    try {
+      const result = await session.run(
+        'MATCH (post:Post {id: $postId}) ' +
+        'REMOVE post.location ' +
+        'RETURN post',
+        { postId }
+      );
+  
+      // Resto del código...
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error deleting post location", error: err.message });
     } finally {
       await session.close();
     }

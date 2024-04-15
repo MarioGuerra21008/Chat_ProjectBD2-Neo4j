@@ -32,11 +32,17 @@ const storage = multer.diskStorage({
   },
 });
 
-// Conexión a Neo4j
-const uri = 'neo4j+s://32aa479e.databases.neo4j.io';
+//Instancia de Mario
+const uri = 'neo4j+s://c5df7f5d.databases.neo4j.io';
 const user = 'neo4j';
-const password = 'kVlo04Ku2n2fZoLXh-fRMdzB8x5Jb9WhnAneDQh7Lss';
+const password = 'wafiofqDUSBfxe2Muw1kB9OBtW5O7mDoy3YSzPYLSuU';
 const neo4jDriver = neo4j.driver(uri, neo4j.auth.basic(user, password));
+
+// Conexión a Neo4j
+//const uri = 'neo4j+s://32aa479e.databases.neo4j.io';
+//const user = 'neo4j';
+//const password = 'kVlo04Ku2n2fZoLXh-fRMdzB8x5Jb9WhnAneDQh7Lss';
+//const neo4jDriver = neo4j.driver(uri, neo4j.auth.basic(user, password));
 
 // Middleware para adjuntar el driver de Neo4j a la solicitud
 app.use((req, res, next) => {
@@ -58,9 +64,6 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 require('./routes/auth')(app); // Importa y llama la función pasando 'app' como argumento
 require('./routes/posts')(app);
 require('./routes/users')(app);
-require('./routes/conversations')(app);
-require('./routes/messages')(app);
-
 
 // Configuración del servidor
 app.use(express.json());
