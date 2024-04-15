@@ -165,6 +165,26 @@ export default function Post({ post, onUpdate }) {
     }
   };
 
+  const handleUpdateDescriptionClick = async () => {
+    try {
+      await axios.put(`http://localhost:8800/api/posts/updateDescription/${currentUser.id}`, {
+        desc: "New Description" // Cambia "New Description" por la descripción que desees actualizar
+      });
+      console.log("Descriptions updated successfully");
+    } catch (err) {
+      console.error("Error updating descriptions:", err);
+    }
+  };
+
+  const handleDeleteImagesClick = async () => {
+    try {
+      await axios.put(`http://localhost:8800/api/posts/deleteImages/${currentUser.id}`);
+      console.log("Images deleted successfully");
+    } catch (err) {
+      console.error("Error deleting images:", err);
+    }
+  };
+
   return (
     <div className="post">
       <div className="postWrapper">
@@ -197,6 +217,8 @@ export default function Post({ post, onUpdate }) {
               <MenuItem onClick={handleBorrarClick}>Borrar publicación</MenuItem>
               <MenuItem onClick={handleEditLocationClick}>Editar ubicación</MenuItem>
               <MenuItem onClick={handleDeleteLocationClick}>Borrar ubicación</MenuItem>
+              <MenuItem onClick={handleUpdateDescriptionClick}>Actualizar descripciones</MenuItem>
+              <MenuItem onClick={handleDeleteImagesClick}>Eliminar imágenes</MenuItem>
             </Menu>
 
             <Modal
@@ -225,7 +247,7 @@ export default function Post({ post, onUpdate }) {
                   <Edit></Edit>
                 </Button>
                 <Button onClick={handleSaveLocation}>
-                  <Edit></Edit>
+                  <Edit>Nueva Ubicación</Edit>
                 </Button>
               </div>
             </Modal>

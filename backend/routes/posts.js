@@ -162,9 +162,10 @@ module.exports = function (app) {
       // Actualiza el post si el usuario es el propietario
       const result = await session.run(
         'MATCH (post:Post {id: $postId}) ' +
+        'SET post.location = $location ' + // Aquí se añade la propiedad "location" al nodo
         'SET post += $updateFields ' +
         'RETURN post',
-        { postId, updateFields }
+        { postId, location, updateFields }
       );
 
       if (result.records.length > 0) {
@@ -182,6 +183,7 @@ module.exports = function (app) {
 
   router.put("/:id/location/delete", async (req, res) => {
     const postId = req.params.id;
+    const session = req.neo4jDriver.session(); 
   
     try {
       const result = await session.run(
@@ -224,7 +226,50 @@ module.exports = function (app) {
     }
   });
   
-  
+    // Actualizar la descripción de todos los posts de un usuario
+  router.put("/updateDescription/:userId", async (req, res) => {
+    const userId = req.params.userId;
+    const { desc } = req.body;
+
+    const session = req.neo4jDriver.session();
+
+    try {
+      await session.run(
+        'MATCH (p:Post {userId: $userId}) ' +
+        'SET p.desc = $desc',
+        { userId, desc }
+      );
+
+      res.status(200).json("Descriptions updated successfully");
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error updating post descriptions", error: err.message });
+    } finally {
+      await session.close();
+    }
+  });
+
+  // Eliminar todas las imágenes de los posts de un usuario
+  router.put("/deleteImages/:userId", async (req, res) => {
+    const userId = req.params.userId;
+
+    const session = req.neo4jDriver.session();
+
+    try {
+      await session.run(
+        'MATCH (p:Post {userId: $userId}) ' +
+        'REMOVE p.img',
+        { userId }
+      );
+
+      res.status(200).json("Images deleted successfully");
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Error deleting post images", error: err.message });
+    } finally {
+      await session.close();
+    }
+  });
 
   //like / dislike a post
 
