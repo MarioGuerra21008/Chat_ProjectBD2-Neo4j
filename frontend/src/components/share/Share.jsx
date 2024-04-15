@@ -34,6 +34,8 @@ export default function Share() {
       try {
         await axios.post("http://localhost:8800/api/upload", data);
       } catch (err) {}
+    }else{
+      newPost.img = "";
     }
     try {
       await axios.post("http://localhost:8800/api/posts", newPost);

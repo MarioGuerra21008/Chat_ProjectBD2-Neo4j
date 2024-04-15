@@ -133,6 +133,31 @@ module.exports = function (app) {
     }
   });
 
+  router.post('/addILoveToLike', async (req, res) => {
+    const { userId, postId} = req.body;
+    const session = req.neo4jDriver.session(); 
+  
+    console.log("userId (posts): ", userId);
+    console.log("postId (posts): ", postId);
+
+    try {
+      const result = await session.run(
+        `MATCH (u:User)-[r:LIKES]->(p:Post)
+         WHERE u.id = $userId AND p.id = $postId
+         SET r.\`I Love\` = CASE r.\`I Love\` WHEN 1 THEN 0 ELSE 1 END
+         RETURN r`,
+        { userId, postId }
+      );
+      res.status(200).json({ message: 'I Love added successfully', data: result.records });
+    } catch (err) {
+      console.error('Error adding I Love to LIKE relationship:', err);
+      res.status(500).json({ message: 'Error adding I Love', error: err });
+    } finally {
+      await session.close();
+    }
+  });
+  
+  
 
   //like / dislike a post
 

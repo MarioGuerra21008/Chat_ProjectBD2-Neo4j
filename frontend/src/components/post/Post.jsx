@@ -11,7 +11,7 @@ import React from "react";
 export default function Post({ post, onUpdate }) {
   console.log("post: ",post)
   const [like, setLike] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(true);
   const [user, setUser] = useState({});
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const { user: currentUser } = useContext(AuthContext);
@@ -79,13 +79,26 @@ export default function Post({ post, onUpdate }) {
     }
   };
 
-  const likeHandler = () => {
+  const likeHandler = async () => {
     try {
-      axios.put("http://localhost:8800/api/posts/" + post.id + "/like", { userId: currentUser.id });
-    } catch (err) {}
-    setLike(isLiked ? like + 1 : like - 1);
-    setIsLiked(!isLiked);
+      // Realiza la petición PUT al servidor
+      await axios.put("http://localhost:8800/api/posts/" + post.properties.id + "/like", { userId: currentUser.id });
+  
+      // Actualiza el estado basándose en si el post estaba previamente 'liked' o no
+      if (!isLiked) {
+        // Si no estaba 'liked', incrementa el contador de likes y establece isLiked a true
+        setLike(like - 1);
+        setIsLiked(true);
+      } else {
+        // Si estaba 'liked', decrementa el contador de likes y establece isLiked a false
+        setLike(like + 1);
+        setIsLiked(false);
+      }
+    } catch (err) {
+      console.error("Error al actualizar el like:", err);
+    }
   };
+  
 
   const handleSaveChanges = async () => {
     try {
@@ -101,6 +114,25 @@ export default function Post({ post, onUpdate }) {
       console.error("Error al actualizar la publicación:", error);
     }
   };
+
+  const addPropertyToLike = async (userId, postId) => {
+    //console.log('userID(POSTS): ', userId);
+    //console.log('postID(POSTS): ', postId);
+    try {
+      const response = await axios.post('http://localhost:8800/api/posts/addILoveToLike', {
+        userId,
+        postId
+      });
+      console.log('Updated like:', response.data);
+    } catch (error) {
+      console.error('Error updating like:', error);
+    }
+  };
+
+  const handleCommentClick = () => {
+    console.log('Comment span clicked');
+    // Aquí puedes agregar más lógica, como abrir un modal de comentarios
+  };  
 
   return (
     <div className="post">
@@ -171,13 +203,15 @@ export default function Post({ post, onUpdate }) {
             <img
               className="likeIcon"
               src={`${PF}heart.png`}
-              onClick={likeHandler}
+              onClick={() => addPropertyToLike(user.id, post.properties.id)}
               alt=""
             />
             <span className="postLikeCounter">{like} people like it</span>
           </div>
           <div className="postBottomRight">
-            <span className="postCommentText">{post.comment} comments</span>
+            <span className="postCommentText" onClick={handleCommentClick}>
+              {post.comment} comments
+            </span>
           </div>
         </div>
       </div>
