@@ -38,8 +38,9 @@ export default function Messenger(){
 
     useEffect(() => {
         const getMessages = async () => {
+          console.log("Currenchat: ", currentChat);
           try {
-            const res = await axios.get("http://localhost:8800/api/messages/" + currentChat?._id);
+            const res = await axios.get("http://localhost:8800/api/messages/" + currentChat?.id);
             setMessages(res.data);
           } catch (err) {
             console.log(err);
@@ -53,19 +54,17 @@ export default function Messenger(){
     const handleSubmit = async (e) => {
       e.preventDefault();
       const message = {
-        sender: user._id,
+        sender: user.id,
         text: newMessage,
-        conversationId: currentChat._id,
+        conversationId: currentChat.id,
       };
   
-      const receiverId = currentChat.members.find(
-        (member) => member !== user._id
-      );
+  
   
      
   
       try {
-        const res = await axios.post("/messages", message);
+        const res = await axios.post("http://localhost:8800/api/messages", message);
         setMessages([...messages, res.data]);
         setNewMessage("");
       } catch (err) {

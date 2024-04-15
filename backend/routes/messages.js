@@ -4,15 +4,36 @@ const Message = require("../models/Message");
 
 module.exports = function (app) {
   
-  //add
   router.post("/", async (req, res) => {
-    const newMessage = new Message(req.body);
-
+    console.log("req.body (messages): ", req.body);
+    const {sender,text, conversationId} = req.body;
+    const createdAt = new Date().toISOString();
+    const session = req.neo4jDriver.session();
+  
     try {
-      const savedMessage = await newMessage.save();
+      // Crear el nodo Message y establecer las relaciones
+      const result = await session.writeTransaction(tx =>
+        tx.run(`
+          CREATE (m:Message {text: $text, createdAt: $createdAt, id: randomUUID()})
+          WITH m
+          MATCH (u:User {id: $sender}), (c:Conversation {id: $conversationId})
+          CREATE (u)-[:SENT_BY]->(m)-[:BELONGS_TO]->(c)
+          RETURN m
+        `, {
+          text,
+          sender,
+          conversationId,
+          createdAt
+        })
+      );
+  
+      const savedMessage = result.records[0].get('m').properties;
       res.status(200).json(savedMessage);
     } catch (err) {
+      console.error(err);
       res.status(500).json(err);
+    } finally {
+      await session.close();
     }
   });
 
