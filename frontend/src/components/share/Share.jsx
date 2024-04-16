@@ -21,7 +21,7 @@ export default function Share() {
     console.log("PF: ", PF);
     e.preventDefault();
     const newPost = {
-      userId: user.id,
+      userId: user.ID,
       desc: desc.current.value,
     };
     if (file) {

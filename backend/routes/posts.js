@@ -12,13 +12,15 @@ module.exports = function (app) {
     const { userId, img, desc } = req.body;
     const createdAt = new Date().toISOString();  // Fecha en formato ISO como string
     
+    console.log(req.body)
   
     const session = req.neo4jDriver.session(); 
   
     try {
       const result = await session.run(
-        "CREATE (post:Post {id: apoc.create.uuid(), userId: $userId, img: $img, desc: $desc, createdAt: $createdAt, updatedAt: $createdAt}) WITH post MATCH (user:User {id: $userId}) CREATE (user)-[:POSTED]->(post) RETURN post",
-        { userId, img, desc, createdAt }
+        "CREATE (post:Post {ID: apoc.create.uuid(), Username: $userId, Image: $img, Post: $desc, Post_created: $createdAt, Post_updated: $createdAt}) WITH post MATCH (user:User {ID: $userId}) CREATE (user)-[:POSTED]->(post) RETURN post",
+        { userId, img, desc, createdAt },
+        console.log(userId)
       );
       
       const savedPost = result.records[0].get('post').properties;
@@ -43,8 +45,8 @@ module.exports = function (app) {
     try {
       // Primero verifica que el post pertenezca al usuario que intenta actualizarlo
       const verifyPost = await session.run(
-        'MATCH (post:Post {id: $postId}) ' +
-        'RETURN post.userId AS ownerUserId',
+        'MATCH (post:Post {ID: $postId}) ' +
+        'RETURN post.Username AS ownerUserId',
         { postId }
       );
   
@@ -62,7 +64,7 @@ module.exports = function (app) {
   
       // Actualiza el post si el usuario es el propietario
       const result = await session.run(
-        'MATCH (post:Post {id: $postId}) ' +
+        'MATCH (post:Post {ID: $postId}) ' +
         'SET post += $updateFields ' +
         'RETURN post',
         { postId, updateFields }
@@ -92,8 +94,8 @@ module.exports = function (app) {
     try {
       // Primero verifica si el post pertenece al usuario y si existe
       const verifyPost = await session.run(
-        'MATCH (post:Post {id: $postId}) ' +
-        'RETURN post.userId AS ownerUserId',
+        'MATCH (post:Post {ID: $postId}) ' +
+        'RETURN post.Username AS ownerUserId',
         { postId }
       );
   
@@ -113,7 +115,7 @@ module.exports = function (app) {
   
       // Si el post pertenece al usuario, procede a eliminarlo
       const result = await session.run(
-        'MATCH (post:Post {id: $postId}) ' +
+        'MATCH (post:Post {ID: $postId}) ' +
         'DETACH DELETE post',
         { postId }
       );
@@ -142,8 +144,8 @@ module.exports = function (app) {
     try {
       // Primero verifica que el post pertenezca al usuario que intenta actualizarlo
       const verifyPost = await session.run(
-        'MATCH (post:Post {id: $postId}) ' +
-        'RETURN post.userId AS ownerUserId',
+        'MATCH (post:Post {ID: $postId}) ' +
+        'RETURN post.Username AS ownerUserId',
         { postId }
       );
 
@@ -161,7 +163,7 @@ module.exports = function (app) {
 
       // Actualiza el post si el usuario es el propietario
       const result = await session.run(
-        'MATCH (post:Post {id: $postId}) ' +
+        'MATCH (post:Post {ID: $postId}) ' +
         'SET post.location = $location ' + // Aquí se añade la propiedad "location" al nodo
         'SET post += $updateFields ' +
         'RETURN post',
@@ -187,7 +189,7 @@ module.exports = function (app) {
   
     try {
       const result = await session.run(
-        'MATCH (post:Post {id: $postId}) ' +
+        'MATCH (post:Post {ID: $postId}) ' +
         'REMOVE post.location ' +
         'RETURN post',
         { postId }
@@ -235,8 +237,8 @@ module.exports = function (app) {
 
     try {
       await session.run(
-        'MATCH (p:Post {userId: $userId}) ' +
-        'SET p.desc = $desc',
+        'MATCH (p:Post {Username: $userId}) ' +
+        'SET p.Post = $desc',
         { userId, desc }
       );
 
@@ -257,8 +259,8 @@ module.exports = function (app) {
 
     try {
       await session.run(
-        'MATCH (p:Post {userId: $userId}) ' +
-        'REMOVE p.img',
+        'MATCH (p:Post {Username: $userId}) ' +
+        'REMOVE p.Image',
         { userId }
       );
 
@@ -287,7 +289,7 @@ module.exports = function (app) {
         'RETURN count(r) AS likesDeleted',
         { userId, postId }
       );
-  
+      //AAAAA
       if (resultDelete.records[0].get('likesDeleted').toInt() > 0) {
         res.status(200).json("The post has been disliked");
       } else {

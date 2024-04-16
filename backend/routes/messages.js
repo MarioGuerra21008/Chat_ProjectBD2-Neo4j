@@ -14,9 +14,9 @@ module.exports = function (app) {
       // Crear el nodo Message y establecer las relaciones
       const result = await session.writeTransaction(tx =>
         tx.run(`
-          CREATE (m:Message {text: $text, createdAt: $createdAt, id: randomUUID()})
+          CREATE (m:Message {Text: $text, Date_created: $createdAt, ID: randomUUID()})
           WITH m
-          MATCH (u:User {id: $sender}), (c:Conversation {id: $conversationId})
+          MATCH (u:User {ID: $sender}), (c:Conversation {ID: $conversationId})
           CREATE (u)-[:SENT_BY]->(m)-[:BELONGS_TO]->(c)
           RETURN m
         `, {
@@ -45,8 +45,8 @@ module.exports = function (app) {
       console.log("req.params.conversationId: ",req.params.conversationId);
       const result = await session.run(
         `MATCH (m:Message)-[:BELONGS_TO]->(c:Conversation)
-        WHERE c.id = $conversationId
-        RETURN m ORDER BY m.createdAt`,
+        WHERE c.ID = $conversationId
+        RETURN m ORDER BY m.Date_created`,
         { conversationId: req.params.conversationId }
       );
 

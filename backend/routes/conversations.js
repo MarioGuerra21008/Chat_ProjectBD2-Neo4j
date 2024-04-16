@@ -24,7 +24,7 @@ module.exports = function (app) {
       console.log("req.params.userId: ",req.params.userId);
       const result = await session.run(
         `MATCH (u:User)-[:CHATS_WITH]->(c:Conversation)
-        WHERE u.id = $userId
+        WHERE u.ID = $userId
         RETURN c`,
         { userId: req.params.userId }
       );
@@ -50,9 +50,9 @@ module.exports = function (app) {
     
     try {
       const result = await session.run(
-        `MATCH (currentUser:User {id: $currentUserId})-[:CHATS_WITH]->(c:Conversation)<-[:CHATS_WITH]-(otherUser:User)
-         WHERE c.id = $conversationId AND NOT currentUser.id = otherUser.id
-         RETURN otherUser.id AS friendId`,
+        `MATCH (currentUser:User {ID: $currentUserId})-[:CHATS_WITH]->(c:Conversation)<-[:CHATS_WITH]-(otherUser:User)
+         WHERE c.ID = $conversationId AND NOT currentUser.ID = otherUser.ID
+         RETURN otherUser.ID AS friendId`,
         { currentUserId, conversationId }
       );
   

@@ -31,12 +31,13 @@ export default function Post({ post, onUpdate }) {
 
   useEffect(() => {
     console.log("currenuser: ",currentUser.id);
+    console.log("User: ", user.Username);
     const fetchUser = async () => {
       const res = await axios.get(`http://localhost:8800/api/users?userId=${post.properties.Username}`);
       setUser(res.data);
     };
     fetchUser();
-  }, [post.userId]);
+  }, [post.properties.Username]);
 
   const handleMoreVertClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -234,7 +235,7 @@ const handleRemoveComment = async () => {
       <div className="postWrapper">
         <div className="postTop">
           <div className="postTopLeft">
-            <Link to={`/profile/${user.username}`}>
+            <Link to={`/profile/${user.Username}`}>
               <img
                 className="postProfileImg"
                 src={
