@@ -21,23 +21,22 @@ module.exports = function (app) {
       const result = await session.run(
         `
         CREATE (u:User {
-          id: apoc.create.uuid(),
-          username: $username,
-          email: $email,
-          passwordHash: $passwordHash,
-          profilePicture: '',
-          coverPicture: '',
-          followers: [],
-          following: [],
-          createdAt: datetime(),
-          updatedAt: datetime()
+          ID: apoc.create.uuid(),
+          Username: $username,
+          Email: $email,
+          Password: $password,
+          PasswordHash: $passwordHash,
+          Followers: [],
+          Following: [],
+          Date_created: datetime()
         })
         RETURN u
         `,
         {
           username,
           email,
-          passwordHash: bcrypt.hashSync(password, 10) // Asegúrate de tener bcrypt disponible
+          password,
+          passwordHash: hashPassword(password) // Asegúrate de tener bcrypt disponible
         }
       );
 
