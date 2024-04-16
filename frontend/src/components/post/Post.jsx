@@ -32,6 +32,7 @@ export default function Post({ post, onUpdate }) {
   useEffect(() => {
     console.log("currenuser: ",currentUser.ID);
     console.log("User: ", user.Username);
+    console.log("Imagen: ", post.properties.Image);
     const fetchUser = async () => {
       const res = await axios.get(`http://localhost:8800/api/users?userId=${post.properties.Username}`);
       setUser(res.data);
@@ -320,7 +321,11 @@ const handleRemoveComment = async () => {
         </div>
         <div className="postCenter">
           <span className="postText">{post?.properties.Post}</span>
-          <img className="postImg" src={post.properties.Image} alt="" />
+          <img
+            className="postImg"
+            src={post.properties.Image.startsWith('http') ? post.properties.Image : `${PF}${post.properties.Image}`}
+            alt=""
+          />
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">

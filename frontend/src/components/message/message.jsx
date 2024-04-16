@@ -12,7 +12,7 @@ export default function Message({ message, own, currentUser}) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios("http://localhost:8800/api/users?userId=" + currentUser.id);
+        const res = await axios("http://localhost:8800/api/users?userId=" + currentUser.ID);
         console.log("usuario: ", res.data)
         setUser(res.data);
       } catch (error) {
@@ -37,7 +37,7 @@ export default function Message({ message, own, currentUser}) {
           }
           alt=""
         />
-        <p className="messageText">{message.text}</p>
+        <p className="messageText">{message.Text}</p>
       </div>
       <div className="messageBottom"></div>
     </div>

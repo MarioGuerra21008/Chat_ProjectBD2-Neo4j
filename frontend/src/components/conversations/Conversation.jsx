@@ -12,7 +12,7 @@ export default function Conversation({ conversation, currentUser }) {
   useEffect(() => {
     const getFriendId = async () => {
       try {
-        const res = await axios.get(`http://localhost:8800/api/conversations/${currentUser.id}/${conversation.id}`);
+        const res = await axios.get(`http://localhost:8800/api/conversations/${currentUser.ID}/${conversation.ID}`);
         const friendId = res.data.friendId;
         // Ahora obtener los detalles del amigo
         const userDetails = await axios.get(`http://localhost:8800/api/users?userId=${friendId}`);
