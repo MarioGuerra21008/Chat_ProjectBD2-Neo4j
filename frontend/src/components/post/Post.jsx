@@ -86,7 +86,7 @@ export default function Post({ post, onUpdate }) {
   const likeHandler = async () => {
     try {
       // Realiza la petición PUT al servidor
-      await axios.put("http://localhost:8800/api/posts/" + post.properties.id + "/like", { userId: currentUser.id });
+      await axios.put("http://localhost:8800/api/posts/" + post.properties.ID + "/like", { userId: currentUser.ID });
   
       // Actualiza el estado basándose en si el post estaba previamente 'liked' o no
       if (!isLiked) {
@@ -332,7 +332,7 @@ const handleRemoveComment = async () => {
             <img
               className="likeIcon"
               src={`${PF}heart.png`}
-              onClick={() => addPropertyToLike(user.id, post.properties.id)}
+              onClick={() => addPropertyToLike(user.ID, post.properties.ID)}
               alt=""
             />
             <span className="postLikeCounter">{like} people like it</span>

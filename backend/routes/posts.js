@@ -212,7 +212,7 @@ module.exports = function (app) {
     try {
       const result = await session.run(
         `MATCH (u:User)-[r:LIKES]->(p:Post)
-         WHERE u.id = $userId AND p.id = $postId
+         WHERE u.ID = $userId AND p.ID = $postId
          SET r.\`I Love\` = CASE r.\`I Love\` WHEN 1 THEN 0 ELSE 1 END
          RETURN r`,
         { userId, postId }
@@ -282,7 +282,7 @@ module.exports = function (app) {
     try {
       // Intentar encontrar y eliminar la relación existente
       const resultDelete = await session.run(
-        'MATCH (user:User {id: $userId})-[r:LIKES]->(post:Post {id: $postId}) ' +
+        'MATCH (user:User {ID: $userId})-[r:LIKES]->(post:Post {ID: $postId}) ' +
         'DELETE r ' +
         'RETURN count(r) AS likesDeleted',
         { userId, postId }
@@ -293,7 +293,7 @@ module.exports = function (app) {
       } else {
         // Crear la relación si no existía anteriormente
         const resultCreate = await session.run(
-          'MATCH (user:User {id: $userId}), (post:Post {id: $postId}) ' +
+          'MATCH (user:User {ID: $userId}), (post:Post {ID: $postId}) ' +
           'MERGE (user)-[:LIKES]->(post) ' +
           'RETURN count(*) AS likesAdded',
           { userId, postId }
