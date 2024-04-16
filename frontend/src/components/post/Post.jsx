@@ -19,6 +19,8 @@ export default function Post({ post, onUpdate }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [updatedDesc, setUpdatedDesc] = useState(post.desc);
   const [newLocation, setNewLocation] = useState('');
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [commentText, setCommentText] = useState('');
 
   //console.log(":C: ", post);
   //console.log(":C2: ", currentUser.id);
@@ -132,8 +134,49 @@ export default function Post({ post, onUpdate }) {
 
   const handleCommentClick = () => {
     console.log('Comment span clicked');
-    // Aquí puedes agregar más lógica, como abrir un modal de comentarios
+    setIsCommentModalOpen(true); // Abre el modal de comentarios
   };
+
+  const handleSendComment = async () => {
+    const userId = currentUser.id; // Asegúrate de que estos datos estén disponibles
+    const postId = post.properties.id;
+    //console.log("userID(handleSendComment): ", userId);
+    //console.log("postId(handleSendComment): ", postId);
+    //console.log("commentText: ", commentText);
+    try {
+        const response = await axios.post('http://localhost:8800/api/posts/addComment', {
+            userId,
+            postId,
+            comment: commentText
+        });
+        console.log('Comment added:', response.data);
+        setIsModalOpen(false); // Cierra el modal después de enviar el comentario
+        setCommentText(''); // Limpiar el campo de texto
+    } catch (error) {
+        console.error('Error adding comment:', error);
+    }
+};
+
+const handleRemoveComment = async () => {
+
+  const userId = currentUser.id; // Asegúrate de que estos datos estén disponibles
+  const postId = post.properties.id;
+
+  try {
+      const response = await axios.post('http://localhost:8800/api/posts/removeComment', {
+          userId,
+          postId
+      });
+      if (response.status === 200) {
+          console.log('Comentario eliminado:', response.data);
+          // Aquí puedes añadir lógica adicional, como actualizar el estado para reflejar la eliminación del comentario
+      } else {
+          console.error('No se pudo eliminar el comentario:', response.data.message);
+      }
+  } catch (error) {
+      console.error('Error al eliminar el comentario:', error);
+  }
+};
   
   const handleEditLocationClick = async () => {
     setNewLocation(''); // Restablecer el estado de la nueva ubicación
@@ -219,6 +262,7 @@ export default function Post({ post, onUpdate }) {
               <MenuItem onClick={handleDeleteLocationClick}>Borrar ubicación</MenuItem>
               <MenuItem onClick={handleUpdateDescriptionClick}>Actualizar descripciones</MenuItem>
               <MenuItem onClick={handleDeleteImagesClick}>Eliminar imágenes</MenuItem>
+              <MenuItem onClick={handleRemoveComment}>Eliminar comentarios</MenuItem>
             </Menu>
 
             <Modal
@@ -251,6 +295,25 @@ export default function Post({ post, onUpdate }) {
                 </Button>
               </div>
             </Modal>
+            <Modal
+                  open={isCommentModalOpen}
+                  onClose={() => setIsCommentModalOpen(false)}
+                  className="modalContainer"
+              >
+                  <div className="modalContent">
+                      <TextField
+                          label="Escribe tu comentario"
+                          variant="outlined"
+                          value={commentText}
+                          onChange={(e) => setCommentText(e.target.value)}
+                          multiline
+                          rows={4}
+                          fullWidth
+                      />
+                      <Button onClick={handleSendComment}>Enviar Comentario</Button>
+                  </div>
+              </Modal>
+
           </div>
         </div>
         <div className="postCenter">
@@ -274,9 +337,9 @@ export default function Post({ post, onUpdate }) {
             <span className="postLikeCounter">{like} people like it</span>
           </div>
           <div className="postBottomRight">
-            <span className="postCommentText" onClick={handleCommentClick}>
+          <span className="postCommentText" onClick={handleCommentClick}>
               {post.comment} comments
-            </span>
+          </span>
           </div>
         </div>
       </div>

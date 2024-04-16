@@ -385,3 +385,60 @@ module.exports = function (app) {
 
   app.use("/api/posts", router);
 };
+
+
+router.post("/addComment", async (req, res) => {
+  const session = req.neo4jDriver.session();
+  const { userId, postId, comment } = req.body;
+
+  try {
+      const result = await session.run(
+          `MATCH (u:User)-[r:POSTED]->(p:Post)
+           WHERE u.id = $userId AND p.id = $postId
+           SET r.comments = $comment
+           RETURN p.title, r.comments`,  // Asumimos que quieres devolver el título del post y el comentario actualizado.
+          { userId, postId, comment }
+      );
+
+      if (result.records.length > 0) {
+          const updatedComment = result.records[0].get('r.comments');
+          const postTitle = result.records[0].get('p.title');
+          res.status(200).json({ message: 'Comment added successfully', postTitle, updatedComment });
+      } else {
+          res.status(404).json({ message: 'Post or user not found' });
+      }
+  } catch (error) {
+      console.error('Error adding comment to POSTED relationship:', error);
+      res.status(500).json({ error: error.message });
+  } finally {
+      await session.close();
+  }
+});
+
+
+router.post("/removeComment", async (req, res) => {
+  const session = req.neo4jDriver.session();
+  const { userId, postId } = req.body;
+
+  try {
+      const result = await session.run(
+          `MATCH (u:User)-[r:POSTED]->(p:Post)
+           WHERE u.id = $userId AND p.id = $postId
+           REMOVE r.comments
+           RETURN p.title, r.comments`,  // Asumimos que quieres devolver el título del post para verificar.
+          { userId, postId }
+      );
+
+      if (result.records.length > 0) {
+          const postTitle = result.records[0].get('p.title');
+          res.status(200).json({ message: 'Comment removed successfully', postTitle });
+      } else {
+          res.status(404).json({ message: 'Post or user not found' });
+      }
+  } catch (error) {
+      console.error('Error removing comment from POSTED relationship:', error);
+      res.status(500).json({ error: error.message });
+  } finally {
+      await session.close();
+  }
+});
