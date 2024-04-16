@@ -253,7 +253,7 @@ module.exports = function (app) {
   });
 
   // Eliminar todas las imágenes de los posts de un usuario
-  router.put("/deleteImages/:userId", async (req, res) => {
+  router.put("/deleteLocations/:userId", async (req, res) => {
     const userId = req.params.userId;
 
     const session = req.neo4jDriver.session();
@@ -261,14 +261,14 @@ module.exports = function (app) {
     try {
       await session.run(
         'MATCH (p:Post {Username: $userId}) ' +
-        'REMOVE p.Image',
+        'REMOVE p.location',
         { userId }
       );
 
-      res.status(200).json("Images deleted successfully");
+      res.status(200).json("Locations deleted successfully");
     } catch (err) {
       console.error(err);
-      res.status(500).json({ message: "Error deleting post images", error: err.message });
+      res.status(500).json({ message: "Error deleting post locations", error: err.message });
     } finally {
       await session.close();
     }

@@ -222,10 +222,10 @@ const handleRemoveComment = async () => {
     }
   };
 
-  const handleDeleteImagesClick = async () => {
+  const handleDeleteLocationsClick = async () => {
     try {
-      await axios.put(`http://localhost:8800/api/posts/deleteImages/${currentUser.ID}`);
-      console.log("Images deleted successfully");
+      await axios.put(`http://localhost:8800/api/posts/deleteLocations/${currentUser.ID}`);
+      console.log("Locations deleted successfully");
     } catch (err) {
       console.error("Error deleting images:", err);
     }
@@ -264,7 +264,7 @@ const handleRemoveComment = async () => {
               <MenuItem onClick={handleEditLocationClick}>Editar ubicación</MenuItem>
               <MenuItem onClick={handleDeleteLocationClick}>Borrar ubicación</MenuItem>
               <MenuItem onClick={handleUpdateDescriptionClick}>Actualizar descripciones</MenuItem>
-              <MenuItem onClick={handleDeleteImagesClick}>Eliminar imágenes</MenuItem>
+              <MenuItem onClick={handleDeleteLocationsClick}>Eliminar ubicaciones</MenuItem>
               <MenuItem onClick={handleRemoveComment}>Eliminar comentarios</MenuItem>
             </Menu>
 
