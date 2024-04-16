@@ -329,13 +329,14 @@ module.exports = function (app) {
 
   router.get("/timeline/:id", async (req, res) => {
     const session = req.neo4jDriver.session(); 
+    console.log(req.params);
     const userId = req.params.id;
     console.log("userID: ", userId)
     try {
       // Consulta para obtener las publicaciones del usuario y de sus amigos.
       const result = await session.run(
         `MATCH (u:User)-[:POSTED]->(p:Post)
-        WHERE u.id = $userId
+        WHERE u.ID = $userId
         OPTIONAL MATCH (u)-[:FOLLOWS]->(f:User)-[:POSTED]->(fp:Post)
         WITH p, COLLECT(DISTINCT fp) AS fps
         UNWIND (fps + [p]) AS allPosts

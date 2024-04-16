@@ -2,6 +2,12 @@ const express = require('express');
 const router = express.Router();
 const neo4j = require('neo4j-driver');
 const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+
+
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
 
 module.exports = function (app) {
   router.post("/register", async (req, res) => {
@@ -47,26 +53,30 @@ module.exports = function (app) {
 
   router.post("/login", async (req, res) => {
     const session = req.neo4jDriver.session(); // Obtiene la sesión del driver inyectado
-    console.log("EMAIL: ", req.body.email);
-    try {
-      
-      const result = await session.run(
-        'MATCH (u:User { email: $email }) RETURN u',
-        { email: req.body.email }
-      );
+    console.log("LOGIN: ", req.body);
+    username = req.body.username;
 
+    const hashedInputPassword = hashPassword(req.body.password);
+    // Cambio para usar username en lugar de email
+    try {
+      const result = await session.run(
+        'MATCH (u:User {Username: $username}) RETURN u', // Cambiado de email a username
+        { username }
+      );
+  
       if (result.records.length === 0) {
         return res.status(404).json("User not found");
       }
-
+  
       const user = result.records[0].get('u').properties;
-
-      const validPassword = await bcrypt.compare(req.body.password, user.passwordHash);
-      if (!validPassword) {
-        return res.status(400).json("Wrong password");
+  
+      console.log("User: ", user.PasswordHash);
+      if (hashedInputPassword === user.PasswordHash) {
+        res.status(200).json(user); // Contraseña correcta
+      } else {
+        return res.status(400).json("Wrong password"); // Contraseña incorrecta
       }
-
-      res.status(200).json(user);
+  
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: 'Internal Server Error' });
@@ -74,7 +84,8 @@ module.exports = function (app) {
       await session.close();
     }
   });
-
+  
   // Monta el enrutador en la aplicación Express
   app.use("/api/auth", router);
+
 };

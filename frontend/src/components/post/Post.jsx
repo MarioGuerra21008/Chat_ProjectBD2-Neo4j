@@ -30,8 +30,9 @@ export default function Post({ post, onUpdate }) {
   }, [currentUser.id, post.likes]);
 
   useEffect(() => {
+    console.log("currenuser: ",currentUser.id);
     const fetchUser = async () => {
-      const res = await axios.get(`http://localhost:8800/api/users?userId=${post.properties.userId}`);
+      const res = await axios.get(`http://localhost:8800/api/users?userId=${post.properties.Username}`);
       setUser(res.data);
     };
     fetchUser();
@@ -244,7 +245,7 @@ const handleRemoveComment = async () => {
                 alt=""
               />
             </Link>
-            <span className="postUsername">{user.username}</span>
+            <span className="postUsername">{user.Username}</span>
             
           </div>
           <div className="postTopRight">
@@ -317,8 +318,8 @@ const handleRemoveComment = async () => {
           </div>
         </div>
         <div className="postCenter">
-          <span className="postText">{post?.properties.desc}</span>
-          <img className="postImg" src={PF + post.properties.img} alt="" />
+          <span className="postText">{post?.properties.Post}</span>
+          <img className="postImg" src={post.properties.Image} alt="" />
         </div>
         <div className="postBottom">
           <div className="postBottomLeft">

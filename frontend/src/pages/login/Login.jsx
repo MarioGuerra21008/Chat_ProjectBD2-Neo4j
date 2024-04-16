@@ -8,6 +8,7 @@ import React from "react";
 
 export default function Login() {
   const email = useRef();
+  const username = useRef();
   const password = useRef();
   const { isFetching, dispatch } = useContext(AuthContext);
   const history = useHistory();
@@ -15,7 +16,7 @@ export default function Login() {
   const handleClick = (e) => {
     e.preventDefault();
     loginCall(
-      { email: email.current.value, password: password.current.value },
+      { username: username.current.value, password: password.current.value }, // Uso de username en lugar de email
       dispatch
     );
   };
@@ -36,11 +37,11 @@ export default function Login() {
         <div className="loginRight">
           <form className="loginBox" onSubmit={handleClick}>
             <input
-              placeholder="Email"
-              type="email"
+              placeholder="Username"
+              type="text"
               required
               className="loginInput"
-              ref={email}
+              ref={username}
             />
             <input
               placeholder="Password"

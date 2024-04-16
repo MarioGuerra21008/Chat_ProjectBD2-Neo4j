@@ -12,13 +12,33 @@ export default function Rightbar({ user }) {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [friends, setFriends] = useState([]);
   const { user: currentUser, dispatch } = useContext(AuthContext);
-  const [followed, setFollowed] = useState(
-    currentUser.following.includes(user?.id)
-  );
+  const [followed, setFollowed] = useState(false);
+  
+
+  function useFollowStatus(currentUserId, targetUserId) {
+   
+
+    useEffect(() => {
+        if (currentUserId && targetUserId) {
+            axios.get(`/api/check-follow/${currentUserId}/${targetUserId}`)
+                .then(response => {
+                    setFollowed(response.data.follows);
+                })
+                .catch(error => {
+                    console.error('Error fetching follow status', error);
+                });
+        }
+    }, [currentUserId, targetUserId]);
+
+    return followed;
+}
+
+  // Uso del hook en el componente
+  const followeds = useFollowStatus(currentUser.id, user?.id);
 
   useEffect(() => {
     const getFriends = async () => {
-      //console.log("user.id: ", user.id);
+      console.log("user.id: ", user.id);
       try {
         const friendList = await axios.get("http://localhost:8800/api/users/friends/" + user.id);
         setFriends(friendList.data);

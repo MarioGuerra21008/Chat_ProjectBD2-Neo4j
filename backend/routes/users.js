@@ -55,14 +55,14 @@ module.exports = function (app) {
       if (userId) {
         // Consulta Neo4j para buscar por ID
         const result = await session.run(
-          'MATCH (user:User {id: $userId}) RETURN user',
+          'MATCH (user:User {ID: $userId}) RETURN user',
           { userId: userId }
         );
         user = result.records.map(record => record.get('user').properties)[0];
       } else if (username) {
         // Consulta Neo4j para buscar por nombre de usuario
         const result = await session.run(
-          'MATCH (user:User {username: $username}) RETURN user',
+          'MATCH (user:User {Username: $username}) RETURN user',
           { username: username }
         );
         user = result.records.map(record => record.get('user').properties)[0];
@@ -192,6 +192,29 @@ module.exports = function (app) {
       res.status(403).json("you cant unfollow yourself");
     }
   });
+
+  // Ejemplo de una ruta en Express para verificar la relación FOLLOWS
+router.get('/check-follow/:currentUserId/:targetUserId', async (req, res) => {
+  const { currentUserId, targetUserId } = req.params;
+  const session = req.neo4jDriver.session();
+
+  try {
+      const result = await session.run(
+          'MATCH (a:User {id: $currentUserId})-[r:FOLLOWS]->(b:User {id: $targetUserId}) RETURN r',
+          { currentUserId, targetUserId }
+      );
+
+      // Si el resultado tiene al menos una relación, entonces el usuario actual sigue al usuario de destino
+      const follows = result.records.length > 0;
+      res.status(200).json({ follows });
+  } catch (error) {
+      console.error('Failed to check follow status:', error);
+      res.status(500).json({ error: 'Internal server error' });
+  } finally {
+      await session.close();
+  }
+});
+
 
   app.use("/api/users", router);
 }
