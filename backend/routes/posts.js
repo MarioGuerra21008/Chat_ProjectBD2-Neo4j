@@ -342,7 +342,7 @@ module.exports = function (app) {
         UNWIND (fps + [p]) AS allPosts
         RETURN DISTINCT allPosts
         ORDER BY allPosts.createdAt DESC
-        LIMIT 10`, // Ajusta el límite según necesites
+        LIMIT 5`, // Ajusta el límite según necesites
         { userId }
       );
 
