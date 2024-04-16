@@ -231,15 +231,16 @@ module.exports = function (app) {
     // Actualizar la descripción de todos los posts de un usuario
   router.put("/updateDescription/:userId", async (req, res) => {
     const userId = req.params.userId;
-    const { desc } = req.body;
+    console.log(userId)
+    const { Post } = req.body;
 
     const session = req.neo4jDriver.session();
 
     try {
       await session.run(
         'MATCH (p:Post {Username: $userId}) ' +
-        'SET p.Post = $desc',
-        { userId, desc }
+        'SET p.Post = $Post',
+        { userId, Post }
       );
 
       res.status(200).json("Descriptions updated successfully");
@@ -343,7 +344,7 @@ module.exports = function (app) {
         WITH p, COLLECT(DISTINCT fp) AS fps
         UNWIND (fps + [p]) AS allPosts
         RETURN DISTINCT allPosts
-        ORDER BY allPosts.createdAt DESC
+        ORDER BY allPosts.Post_created DESC
         LIMIT 5`, // Ajusta el límite según necesites
         { userId }
       );
@@ -369,9 +370,9 @@ module.exports = function (app) {
     try {
       // Consulta para obtener todas las publicaciones de un usuario.
       const result = await session.run(
-        `MATCH (u:User {username: $username})-[:POSTED]->(p:Post)
+        `MATCH (u:User {Username: $username})-[:POSTED]->(p:Post)
         RETURN p
-        ORDER BY p.createdAt DESC`, // Asumiendo que quieres orden descendente.
+        ORDER BY p.Post_created DESC`, // Asumiendo que quieres orden descendente.
         { username }
       );
 
@@ -397,7 +398,7 @@ router.post("/addComment", async (req, res) => {
   try {
       const result = await session.run(
           `MATCH (u:User)-[r:POSTED]->(p:Post)
-           WHERE u.id = $userId AND p.id = $postId
+           WHERE u.ID = $userId AND p.ID = $postId
            SET r.comments = $comment
            RETURN p.title, r.comments`,  // Asumimos que quieres devolver el título del post y el comentario actualizado.
           { userId, postId, comment }
@@ -426,7 +427,7 @@ router.post("/removeComment", async (req, res) => {
   try {
       const result = await session.run(
           `MATCH (u:User)-[r:POSTED]->(p:Post)
-           WHERE u.id = $userId AND p.id = $postId
+           WHERE u.ID = $userId AND p.ID = $postId
            REMOVE r.comments
            RETURN p.title, r.comments`,  // Asumimos que quieres devolver el título del post para verificar.
           { userId, postId }

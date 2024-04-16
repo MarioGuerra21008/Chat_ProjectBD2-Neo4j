@@ -17,7 +17,7 @@ export default function Post({ post, onUpdate }) {
   const { user: currentUser } = useContext(AuthContext);
   const [anchorEl, setAnchorEl] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [updatedDesc, setUpdatedDesc] = useState(post.desc);
+  const [updatedDesc, setUpdatedDesc] = useState(post.Post);
   const [newLocation, setNewLocation] = useState('');
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -27,10 +27,10 @@ export default function Post({ post, onUpdate }) {
 
   useEffect(() => {
     setIsLiked(2);
-  }, [currentUser.id, post.likes]);
+  }, [currentUser.ID, post.Likes]);
 
   useEffect(() => {
-    console.log("currenuser: ",currentUser.id);
+    console.log("currenuser: ",currentUser.ID);
     console.log("User: ", user.Username);
     const fetchUser = async () => {
       const res = await axios.get(`http://localhost:8800/api/users?userId=${post.properties.Username}`);
@@ -63,10 +63,10 @@ export default function Post({ post, onUpdate }) {
       
   
       // Supongamos que postId es el ID de la publicación que quieres borrar
-      const postId = post.properties.id;
+      const postId = post.properties.ID;
   
       // Lógica para la opción "Borrar publicación"
-      console.log('Borrar publicación: ', post.properties.id);
+      console.log('Borrar publicación: ', post.properties.ID);
 
       // Enviar la solicitud DELETE al backend
       //console.log("userID: ", post.userId);
@@ -107,9 +107,9 @@ export default function Post({ post, onUpdate }) {
 
   const handleSaveChanges = async () => {
     try {
-      const updatedPost = await axios.put(`http://localhost:8800/api/posts/${post.properties.id}`, {
-        userId: currentUser.id,
-        desc: updatedDesc,
+      const updatedPost = await axios.put(`http://localhost:8800/api/posts/${post.properties.ID}`, {
+        userId: currentUser.ID,
+        Post: updatedDesc,
       });
 
       // Llama a la función onUpdate para actualizar el estado en Feed
@@ -140,8 +140,8 @@ export default function Post({ post, onUpdate }) {
   };
 
   const handleSendComment = async () => {
-    const userId = currentUser.id; // Asegúrate de que estos datos estén disponibles
-    const postId = post.properties.id;
+    const userId = currentUser.ID; // Asegúrate de que estos datos estén disponibles
+    const postId = post.properties.ID;
     //console.log("userID(handleSendComment): ", userId);
     //console.log("postId(handleSendComment): ", postId);
     //console.log("commentText: ", commentText);
@@ -161,8 +161,8 @@ export default function Post({ post, onUpdate }) {
 
 const handleRemoveComment = async () => {
 
-  const userId = currentUser.id; // Asegúrate de que estos datos estén disponibles
-  const postId = post.properties.id;
+  const userId = currentUser.ID; // Asegúrate de que estos datos estén disponibles
+  const postId = post.properties.ID;
 
   try {
       const response = await axios.post('http://localhost:8800/api/posts/removeComment', {
@@ -188,8 +188,8 @@ const handleRemoveComment = async () => {
   
   const handleSaveLocation = async () => {
     try {
-      const response = await axios.put(`http://localhost:8800/api/posts/${post.properties.id}/location`, {
-        userId: currentUser.id,
+      const response = await axios.put(`http://localhost:8800/api/posts/${post.properties.ID}/location`, {
+        userId: currentUser.ID,
         location: newLocation,
       });
       console.log(response.data); // Deberías ver un mensaje indicando que la ubicación se ha actualizado correctamente
@@ -202,7 +202,7 @@ const handleRemoveComment = async () => {
   
   const handleDeleteLocationClick = async () => {
     try {
-      const response = await axios.put(`http://localhost:8800/api/posts/${post.properties.id}/location/delete`);
+      const response = await axios.put(`http://localhost:8800/api/posts/${post.properties.ID}/location/delete`);
       console.log(response.data); // Deberías ver un mensaje indicando que la ubicación se ha eliminado correctamente
       // Puedes actualizar el estado del post si es necesario
     } catch (error) {
@@ -212,8 +212,8 @@ const handleRemoveComment = async () => {
 
   const handleUpdateDescriptionClick = async () => {
     try {
-      await axios.put(`http://localhost:8800/api/posts/updateDescription/${currentUser.id}`, {
-        desc: "New Description" // Cambia "New Description" por la descripción que desees actualizar
+      await axios.put(`http://localhost:8800/api/posts/updateDescription/${currentUser.ID}`, {
+        Post: "New Description" // Cambia "New Description" por la descripción que desees actualizar
       });
       console.log("Descriptions updated successfully");
     } catch (err) {
@@ -223,7 +223,7 @@ const handleRemoveComment = async () => {
 
   const handleDeleteImagesClick = async () => {
     try {
-      await axios.put(`http://localhost:8800/api/posts/deleteImages/${currentUser.id}`);
+      await axios.put(`http://localhost:8800/api/posts/deleteImages/${currentUser.ID}`);
       console.log("Images deleted successfully");
     } catch (err) {
       console.error("Error deleting images:", err);

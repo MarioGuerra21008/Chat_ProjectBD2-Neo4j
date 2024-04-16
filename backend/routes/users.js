@@ -126,8 +126,8 @@ module.exports = function (app) {
     try {
       // Reemplaza 'userId' con el nombre de campo apropiado si es necesario
       const result = await session.run(
-        `MATCH (u:User {id: $userId})-[:FOLLOWS]->(f:User)
-        RETURN f.id AS id, f.username AS username, f.profilePicture AS profilePicture`,
+        `MATCH (u:User {ID: $userId})-[:FOLLOWS]->(f:User)
+        RETURN f.ID AS id, f.Username AS username, f.profilePicture AS profilePicture`,
         { userId: req.params.userId }
       );
 
@@ -200,7 +200,7 @@ router.get('/check-follow/:currentUserId/:targetUserId', async (req, res) => {
 
   try {
       const result = await session.run(
-          'MATCH (a:User {id: $currentUserId})-[r:FOLLOWS]->(b:User {id: $targetUserId}) RETURN r',
+          'MATCH (a:User {ID: $currentUserId})-[r:FOLLOWS]->(b:User {ID: $targetUserId}) RETURN r',
           { currentUserId, targetUserId }
       );
 
