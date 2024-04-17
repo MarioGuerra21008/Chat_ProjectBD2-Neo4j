@@ -20,6 +20,7 @@ module.exports = function (app) {
 
   router.get("/:userId", async (req, res) => {
     const session = req.neo4jDriver.session();
+    //console.log("Entra?");
     try {
       console.log("req.params.userId: ",req.params.userId);
       const result = await session.run(

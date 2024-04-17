@@ -6,7 +6,7 @@ import React from "react";
 export default function Conversation({ conversation, currentUser }) {
   const [user, setUser] = useState(null);
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
-  //console.log("Perfil del usuario: ", currentUser);
+  console.log("Perfil del usuario: ", currentUser);
   //console.log("Perfil del usuario: ", conversation);
   
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function Conversation({ conversation, currentUser }) {
         }
         alt=""
       />
-      <span className="conversationName">{user?.username}</span>
+      <span className="conversationName">{currentUser?.Username}</span>
     </div>
   );
 }

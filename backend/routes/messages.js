@@ -54,9 +54,9 @@ module.exports = function (app) {
         const message = record.get('m').properties;
         // Asegurarse de devolver solo las propiedades necesarias
         return {
-          text: message.text,
-          sender: message.sender,
-          createdAt: message.createdAt
+          text: message.Text,
+          sender: message.Username,
+          createdAt: message.Date_created
         };
       });
 

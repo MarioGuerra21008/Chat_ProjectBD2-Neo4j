@@ -37,7 +37,7 @@ export default function Message({ message, own, currentUser}) {
           }
           alt=""
         />
-        <p className="messageText">{message.Text}</p>
+        <p className="messageText">{message.text}</p>
       </div>
       <div className="messageBottom"></div>
     </div>

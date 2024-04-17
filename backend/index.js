@@ -64,6 +64,8 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
 require('./routes/auth')(app); // Importa y llama la función pasando 'app' como argumento
 require('./routes/posts')(app);
 require('./routes/users')(app);
+require('./routes/conversations')(app);
+require('./routes/messages')(app);
 
 // Configuración del servidor
 app.use(express.json());

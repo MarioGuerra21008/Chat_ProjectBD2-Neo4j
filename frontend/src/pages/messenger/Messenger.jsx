@@ -18,17 +18,7 @@ export default function Messenger(){
     const [newMessage, setNewMessage] = useState("");
     const scrollRef = useRef();
 
-    useEffect(() => {
-        const getConversations = async () => {
-          try {
-            const res = await axios.get("http://localhost:8800/api/conversations/" + user.id);
-            setConversations(res.data);
-          } catch (err) {
-            console.log("xd",err);
-          }
-        };
-        getConversations();
-      }, [user.id]);
+    
 
     useEffect(() => {
         arrivalMessage &&
@@ -37,31 +27,55 @@ export default function Messenger(){
     }, [arrivalMessage, currentChat]);
 
     useEffect(() => {
-        const getMessages = async () => {
-          console.log("Currenchat: ", currentChat);
-          try {
-            const res = await axios.get("http://localhost:8800/api/messages/" + currentChat?.id);
-            setMessages(res.data);
-          } catch (err) {
-            console.log(err);
+      const getConversations = async () => {
+        console.log("user: ", user);
+        try {
+          const res = await axios.get(`http://localhost:8800/api/conversations/${user.ID}`);
+          setConversations(res.data);
+          console.log("res.data: ", res.data);
+          // Automatically set the first conversation as the current chat if not already set
+          if (res.data.length > 0 && !currentChat) {
+            setCurrentChat(res.data[0]);
           }
-        };
+        } catch (err) {
+          console.log("Error loading conversations", err);
+        }
+      };
+  
+      if (user.ID) {
+        getConversations();
+      }
+  
+    }, [user.ID]);
+  
+    useEffect(() => {
+      const getMessages = async () => {
+        console.log("Current chat: ", currentChat);
+        if (currentChat && currentChat.ID) {
+          
+          try {
+            const res = await axios.get(`http://localhost:8800/api/messages/${currentChat.ID}`);
+            setMessages(res.data);
+            console.log("Res.data(messages): ", res.data);
+          } catch (err) {
+            console.log("Error loading messages", err);
+          }
+        }
+      };
+  
+      if (currentChat) {
         getMessages();
+      }
+  
     }, [currentChat]);
-
-    
 
     const handleSubmit = async (e) => {
       e.preventDefault();
       const message = {
-        sender: user.id,
+        sender: user.ID,
         text: newMessage,
-        conversationId: currentChat.id,
+        conversationId: currentChat.ID,
       };
-  
-  
-  
-     
   
       try {
         const res = await axios.post("http://localhost:8800/api/messages", message);
@@ -70,6 +84,8 @@ export default function Messenger(){
       } catch (err) {
         console.log(err);
       }
+
+      window.location.reload();
     };
 
     return(
@@ -91,7 +107,7 @@ export default function Messenger(){
                 <div className="chatBoxTop">
                   {messages.map((m) => (
                     <div ref={scrollRef}>
-                      <Message message={m} own={m.sender === user.id} currentUser={user} />
+                      <Message message={m} own={m.sender === user.ID} currentUser={user} />
                     </div>
                   ))}
                 </div>
