@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const Conversation = require("../models/Conversation");
 
 //new conv
 module.exports = function (app) {

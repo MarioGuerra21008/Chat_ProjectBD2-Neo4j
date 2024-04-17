@@ -1,5 +1,3 @@
-const User = require("../models/User");
-const Post = require("../models/Post");
 const router = require("express").Router();
 const bcrypt = require("bcrypt");
 const neo4j = require('neo4j-driver');

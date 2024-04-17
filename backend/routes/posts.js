@@ -1,6 +1,4 @@
 const router = require("express").Router();
-const Post = require("../models/Post");
-const User = require("../models/User");
 const neo4j = require('neo4j-driver');
 
 
@@ -86,6 +84,7 @@ module.exports = function (app) {
   //delete a post
 
   router.delete("/:id", async (req, res) => {
+    console.log("xd",req.body)
     const postId = req.params.id;
     const userId = req.body.userId;
     //console.log("postId: ", req.body);
@@ -100,8 +99,8 @@ module.exports = function (app) {
       );
   
       const ownerUserId = verifyPost.records[0]?.get('ownerUserId');
-      //console.log("ownerUserId: ", ownerUserId);
-      //console.log("UserId: ", userId);
+      console.log("ownerUserId: ", ownerUserId);
+      console.log("UserId: ", userId);
 
       if (!ownerUserId) {
         res.status(404).json("post not found");

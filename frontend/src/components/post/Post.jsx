@@ -72,7 +72,7 @@ export default function Post({ post, onUpdate }) {
       // Enviar la solicitud DELETE al backend
       //console.log("userID: ", post.userId);
       const response = await axios.delete(`http://localhost:8800/api/posts/${postId}`, {
-        data: { userId: post.properties.userId}, // Agrega el userId necesario en el cuerpo de la solicitud
+        data: { userId: post.properties.Username}, // Agrega el userId necesario en el cuerpo de la solicitud
       });
   
       // Manejar la respuesta del servidor
