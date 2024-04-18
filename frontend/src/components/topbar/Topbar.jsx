@@ -105,6 +105,9 @@ export default function Topbar() {
       <div className="topbarRight">
         <div className="topbarLinks">
           <span className="topbarLink">Homepage</span>
+          <Link className="alink" to={`/fyp/`}>
+            <span className="topbarLink">FYP</span>
+            </Link>
           <span className="topbarLink">Timeline</span>
         </div>
         <div className="topbarIcons">

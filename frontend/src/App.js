@@ -1,4 +1,5 @@
 import Home from "./pages/home/Home";
+import HomeFYP from "./pages/home_fyp/Home_fyp";
 import Login from "./pages/login/Login";
 import Profile from "./pages/profile/Profile";
 import Register from "./pages/register/Register";
@@ -25,9 +26,15 @@ function App() {
         <Route path="/register">
           {user ? <Redirect to="/" /> : <Register />}
         </Route>
+        
         <Route path="/messenger">
           {!user ? <Redirect to="/" /> : <Messenger/>}
         </Route>
+
+        <Route path="/fyp/">
+          <HomeFYP />
+        </Route>
+
         <Route path="/profile/:username">
           <Profile />
         </Route>

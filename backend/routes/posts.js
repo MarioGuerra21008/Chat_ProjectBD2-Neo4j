@@ -381,22 +381,7 @@ module.exports = function (app) {
 
       // Aquí asumimos que quieres mezclar y luego ordenar todas las publicaciones juntas. Ajusta según necesites.
       const posts = result.records.map(record => record.get('allPosts'));
-      
-      // const result = await session.run(
-      //   `MATCH (u:User)-[:LIKES_HOBBY]->(h:Hobby) 
-      //    WHERE u.ID = $userId
-      //    MATCH (h)-[:RELATED_TO]->(p:Post)
-      //    RETURN p, SIZE(SPLIT(p.Likes, ', ')) AS NumLikes
-      //    ORDER BY NumLikes DESC
-      //    LIMIT 5`,
-      //   { userId }
-      // );
-      
-      // const posts = result.records.map(record => ({
-      //   id: record.get('p').properties.ID,
-      //   post: record.get('p').properties.Post,
-      //   likes: record.get('NumLikes')
-      // }));
+
       
       
       res.status(200).json(posts);
