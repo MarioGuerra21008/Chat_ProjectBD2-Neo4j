@@ -11,8 +11,8 @@ export default function Register() {
   const passwordAgain = useRef();
   const history = useHistory();
 
-  const handleClick = async (e) => {
-    e.preventDefault();
+  const handleClick = async () => {
+
     if (passwordAgain.current.value !== password.current.value) {
       passwordAgain.current.setCustomValidity("Passwords don't match!");
     } else {
@@ -31,8 +31,28 @@ export default function Register() {
     }
   };
 
+  const handleAdminClick = async () => {
+
+    if (passwordAgain.current.value !== password.current.value) {
+      passwordAgain.current.setCustomValidity("Passwords don't match!");
+    } else {
+      const admin = {
+        username: username.current.value,
+        email: email.current.value,
+        password: password.current.value,
+        admin: true, // Asumiendo que el backend procesa este campo para registrar admins
+      };
+      try {
+        console.log("Admin: ", admin)
+        await axios.post("http://localhost:8800/api/auth/register/admin", admin); // Asumiendo una ruta específica para registro de admin
+        history.push("/login"); // Asumiendo que existe una ruta de dashboard de admin
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
   const handleLoginClick = () => {
-    // Navegar hacia la ruta /login al hacer clic en el botón "Log into Account"
     history.push("/login");
   };
 
@@ -46,7 +66,7 @@ export default function Register() {
           </span>
         </div>
         <div className="loginRight">
-          <form className="loginBox" onSubmit={handleClick}>
+          <form className="loginBox" onSubmit={(e) => e.preventDefault()}>
             <input
               placeholder="Username"
               required
@@ -75,10 +95,15 @@ export default function Register() {
               className="loginInput"
               type="password"
             />
-            <button className="loginButton" type="submit">
+            <button className="loginButton" onClick={handleClick}>
               Sign Up
             </button>
-            <button className="loginRegisterButton" onClick={handleLoginClick}>Log into Account</button>
+            <button className="loginButton" onClick={handleAdminClick}>
+              Sign Up Admin
+            </button>
+            <button className="loginRegisterButton" onClick={handleLoginClick}>
+              Log into Account
+            </button>
           </form>
         </div>
       </div>

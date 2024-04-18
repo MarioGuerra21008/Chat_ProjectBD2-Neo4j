@@ -84,6 +84,50 @@ module.exports = function (app) {
     }
   });
   
+
+
+router.post("/register/admin", async (req, res) => {
+    console.log("ENTRA");
+
+    const { username, email, password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10); // Asegúrate de que el salting y hashing son seguros
+
+    const session = req.neo4jDriver.session();
+
+    try {
+      const result = await session.run(
+        `
+        CREATE (u:User:Admin { // Nota el doble label aquí
+          ID: apoc.create.uuid(),
+          Username: $username,
+          Email: $email,
+          Password: $password,
+          PasswordHash: $passwordHash,
+          Followers: [],
+          Following: [],
+          Date_created: datetime()
+        })
+        RETURN u
+        `,
+        {
+          username,
+          email,
+          password,
+          passwordHash
+        }
+      );
+
+      const admin = result.records[0].get('u').properties;
+      res.status(200).json(admin);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+      await session.close();
+    }
+});
+
+
   // Monta el enrutador en la aplicación Express
   app.use("/api/auth", router);
 
