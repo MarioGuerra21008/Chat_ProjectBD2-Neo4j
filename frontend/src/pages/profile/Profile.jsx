@@ -12,10 +12,11 @@ export default function Profile() {
   const PF = process.env.REACT_APP_PUBLIC_FOLDER;
   const [user, setUser] = useState({});
   const username = useParams().username;
+  
 
   useEffect(() => {
     const fetchUser = async () => {
-      const res = await axios.get(`/users?username=${username}`);
+      const res = await axios.get(`http://localhost:8800/api/users?username=${username}`);
       setUser(res.data);
     };
     fetchUser();
@@ -49,8 +50,8 @@ export default function Profile() {
               />
             </div>
             <div className="profileInfo">
-              <h4 className="profileInfoName">{user.username}</h4>
-              <span className="profileInfoDesc">{user.desc}</span>
+              <h4 className="profileInfoName">{user.Username}</h4>
+              <span className="profileInfoDesc">{user.Followers}</span>
             </div>
           </div>
           <div className="profileRightBottom">

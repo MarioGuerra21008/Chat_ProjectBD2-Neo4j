@@ -1,10 +1,14 @@
 import "./topbar.css";
-import { Search, Person, Chat, Notifications, ExitToApp } from "@material-ui/icons";
-import { IconButton, MenuItem,MenuList, Paper, Popper } from "@material-ui/core";
+import { Search, Person, Chat, Notifications, ExitToApp, Sports, Edit} from "@material-ui/icons";
+import { IconButton, MenuItem,MenuList, Paper, Popper, Button} from "@material-ui/core";
 import { Link } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import React, {useState} from "react";
+import Modal from '@material-ui/core/Modal';
+import Box from '@material-ui/core/Box';
+
+
 
 export default function Topbar() {
   const { user } = useContext(AuthContext);
@@ -12,6 +16,48 @@ export default function Topbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
+  const [selectedHobbies, setSelectedHobbies] = useState([]);
+
+  const handleSelectHobby = hobby => {
+    if (selectedHobbies.includes(hobby)) {
+      setSelectedHobbies(selectedHobbies.filter(h => h !== hobby));
+    } else {
+      setSelectedHobbies([...selectedHobbies, hobby]);
+    }
+  };
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleSaveHobbies = async (userId) => {
+    console.log("Selected hobbies:", selectedHobbies);
+    try {
+      const response = await fetch(`http://localhost:8800/api/users/${userId}/hobbies`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ hobbies: selectedHobbies }),
+      });
+
+      if (!response.ok) throw new Error('Network response was not ok');
+
+      const data = await response.json();
+      console.log('Success:', data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+};
+
+
+
 
   const handleClick = async () => {
     try {
@@ -123,6 +169,10 @@ export default function Topbar() {
             <Notifications />
             <span className="topbarIconBadge">1</span>
           </div>
+          <button className="topbarIconItem" onClick={handleOpenModal}>
+            <Sports />
+            <span className="topbarIconBadge">0</span>
+          </button>
         </div>
         <Link to={`/profile/${user.username}`}>
           <img
@@ -136,6 +186,46 @@ export default function Topbar() {
           />
         </Link>
       </div>
+
+      <Modal
+              open={openModal}
+              onClose={handleCloseModal}
+              aria-labelledby="simple-modal-title"
+              aria-describedby="simple-modal-description"
+            >
+              <Box className="modalStyle">
+        <h2 id="simple-modal-title">Select Hobbies</h2>
+        <div id="simple-modal-description" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div>
+            <button
+              className={`hobbyButton ${selectedHobbies.includes('Deportes') ? 'selected' : ''}`}
+              onClick={() => handleSelectHobby('Deportes')}>
+              Deportes
+            </button>
+            <button
+              className={`hobbyButton ${selectedHobbies.includes('Cocina') ? 'selected' : ''}`}
+              onClick={() => handleSelectHobby('Cocina')}>
+              Cocina
+            </button>
+            <button
+              className={`hobbyButton ${selectedHobbies.includes('Literatura') ? 'selected' : ''}`}
+              onClick={() => handleSelectHobby('Literatura')}>
+              Literatura
+            </button>
+            <button
+              className={`hobbyButton ${selectedHobbies.includes('Videojuegos') ? 'selected' : ''}`}
+              onClick={() => handleSelectHobby('Videojuegos')}>
+              Videojuegos
+            </button>
+          </div>
+          <Button onClick={() => handleSaveHobbies(user.ID)}>
+            <Edit />
+          </Button>
+        </div>
+      </Box>
+
+
+      </Modal>
     </div>
   );
 }

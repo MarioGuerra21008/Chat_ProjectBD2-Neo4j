@@ -35,8 +35,8 @@ function App() {
           <HomeFYP />
         </Route>
 
-        <Route path="/profile/:username">
-          <Profile />
+        <Route path="/profile/:Username">
+          <Profile  />
         </Route>
       </Switch>
     </Router>

@@ -213,6 +213,38 @@ router.get('/check-follow/:currentUserId/:targetUserId', async (req, res) => {
   }
 });
 
+router.post('/:userId/hobbies', async (req, res) => {
+  console.log(req.params);
+  const userId = req.params.userId;
+  const hobbies = req.body.hobbies;
+  console.log("hobbies: ", hobbies);
+  const session = req.neo4jDriver.session();
+  
+  try {
+    // Transacción para crear los nodos y las relaciones
+    const result = await session.writeTransaction(tx =>
+      tx.run(
+        `
+        MATCH (user:User {ID: $userId})
+        UNWIND $hobbies AS hobby
+        MERGE (h:Hobby {name: hobby})
+        MERGE (user)-[:LIKES_HOBBY]->(h)
+        RETURN h
+        `,
+        { userId, hobbies }
+      )
+    );
+
+    const hobbiesCreated = result.records.map(record => record.get('h').properties);
+    res.status(200).json({ message: "Hobbies updated successfully!", hobbies: hobbiesCreated });
+  } catch (error) {
+    console.error('Error updating hobbies:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    await session.close();
+  }
+});
+
 
   app.use("/api/users", router);
 }
